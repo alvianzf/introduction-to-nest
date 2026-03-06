@@ -1,4 +1,3 @@
-
 # Module 6 - First Week Day 1
 
 ## Topics Covered
@@ -12,6 +11,21 @@
 ### What is Backend Development
 
 The backend has three main parts:
+
+```mermaid
+flowchart LR
+    Frontend(["💻 Frontend (Web/App)"])
+    Server["🖥️ Server (The Receiver)"]
+    Application{"⚙️ Application (Logic)"}
+    Database[("🗄️ Database (Storage)")]
+
+    Frontend -- "Sends Request" --> Server
+    Server -- "Passes Request" --> Application
+    Application -- "Reads/Writes" --> Database
+    Database -- "Returns Data" --> Application
+    Application -- "Passes Response" --> Server
+    Server -- "Sends Response" --> Frontend
+```
 
 - **Server**: The place where requests land, like your PC when you run a local gym battle.
 - **Application**: The actual logic that decides what to do — your Pokémon trainer making battle decisions.
@@ -36,7 +50,7 @@ cd project-name
 
 #### Project Structure
 
-```
+```text
 src/
 ├── main.ts                  # Application entry point
 ├── app.module.ts            # Root module
@@ -50,6 +64,7 @@ src/
 ```
 
 **Key Files:**
+
 - `main.ts`: Bootstraps the NestJS application
 - `app.module.ts`: Root module that imports all other modules
 - `app.controller.ts`: Handles incoming requests and returns responses
@@ -69,24 +84,25 @@ An **API** (Application Programming Interface) is a set of protocols and tools t
 
 REST (Representational State Transfer) is an architectural style for building APIs using standard HTTP methods to perform operations on resources.
 
-```
-┌─────────────┐                                    ┌─────────────┐
-│   Client    │ ──── HTTP Request (GET, POST...) ──▶ │   Server    │
-│             │                                     │             │
-│             │ ◀── HTTP Response (JSON, Data) ──── │             │
-└─────────────┘                                    └─────────────┘
+```mermaid
+sequenceDiagram
+    participant Client as 💻 Client (Browser/Postman)
+    participant Server as ⚙️ Server (NestJS)
+
+    Client->>Server: HTTP Request (GET, POST...)
+    Server-->>Client: HTTP Response (JSON, Data)
 ```
 
 #### HTTP Methods
 
 REST uses standard HTTP methods to define operations:
 
-| Method | Purpose | Example |
-|--------|---------|---------|
-| **GET** | Retrieve data | `GET /books` - fetch all books |
-| **POST** | Create new resource | `POST /books` - add a new book |
-| **PUT** | Update existing resource | `PUT /books/1` - modify book with ID 1 |
-| **DELETE** | Remove resource | `DELETE /books/1` - delete book with ID 1 |
+| Method     | Purpose                  | Example                                   |
+| ---------- | ------------------------ | ----------------------------------------- |
+| **GET**    | Retrieve data            | `GET /books` - fetch all books            |
+| **POST**   | Create new resource      | `POST /books` - add a new book            |
+| **PUT**    | Update existing resource | `PUT /books/1` - modify book with ID 1    |
+| **DELETE** | Remove resource          | `DELETE /books/1` - delete book with ID 1 |
 
 #### Sample Code: Books API
 
@@ -161,19 +177,19 @@ export class BooksController {
 
 #### Code Glossary
 
-| Term | Definition | Usage |
-|------|-----------|-------|
-| `@Controller('books')` | Decorator defining the base route for all endpoints in this class | Routes all requests to `/books` |
-| `@Get()` | Decorator mapping HTTP GET requests | Retrieves data without modifying it |
-| `@Get(':id')` | Decorator mapping GET requests with a route parameter | `:id` is a placeholder for dynamic values |
-| `@Post()` | Decorator mapping HTTP POST requests | Creates new resources |
-| `@Put(':id')` | Decorator mapping HTTP PUT requests | Updates entire existing resources |
-| `@Delete(':id')` | Decorator mapping HTTP DELETE requests | Removes existing resources |
-| `@Param('id')` | Decorator extracting URL parameters | Captures `:id` from route path |
-| `@Body()` | Decorator extracting JSON request body | Accesses data sent by the client |
-| `type Book` | TypeScript type alias | Defines the shape of a book object |
-| `books.find()` | Array method searching for first matching element | Retrieves a single book by condition |
-| `books.splice()` | Array method removing elements | Deletes an item at a specific index |
+| Term                   | Definition                                                        | Usage                                     |
+| ---------------------- | ----------------------------------------------------------------- | ----------------------------------------- |
+| `@Controller('books')` | Decorator defining the base route for all endpoints in this class | Routes all requests to `/books`           |
+| `@Get()`               | Decorator mapping HTTP GET requests                               | Retrieves data without modifying it       |
+| `@Get(':id')`          | Decorator mapping GET requests with a route parameter             | `:id` is a placeholder for dynamic values |
+| `@Post()`              | Decorator mapping HTTP POST requests                              | Creates new resources                     |
+| `@Put(':id')`          | Decorator mapping HTTP PUT requests                               | Updates entire existing resources         |
+| `@Delete(':id')`       | Decorator mapping HTTP DELETE requests                            | Removes existing resources                |
+| `@Param('id')`         | Decorator extracting URL parameters                               | Captures `:id` from route path            |
+| `@Body()`              | Decorator extracting JSON request body                            | Accesses data sent by the client          |
+| `type Book`            | TypeScript type alias                                             | Defines the shape of a book object        |
+| `books.find()`         | Array method searching for first matching element                 | Retrieves a single book by condition      |
+| `books.splice()`       | Array method removing elements                                    | Deletes an item at a specific index       |
 
 #### Breakdown
 
@@ -189,5 +205,3 @@ export class BooksController {
 
 - Web: https://alvianzf.id
 - LinkedIn: https://linkedin.com/in/alvianzf
-- Batch: [Your batch number]
-
