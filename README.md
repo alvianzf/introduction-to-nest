@@ -44,13 +44,41 @@ Postman isn't just for checking if your server works; it's a powerful tool for g
 3. Add descriptions and save example responses.
 4. Postman automatically generates a web page with code snippets for frontend developers to use.
 
-### 🎨 Documenting Endpoints with Decorators
+### 🎨 Documenting Endpoints with Swagger
 
-In NestJS, we can automate our documentation so we never have to write it step-by-step by hand! We usually use a library called `@nestjs/swagger`.
+In NestJS, we can automate our documentation so we never have to write it step-by-step by hand using the **Swagger** module (`@nestjs/swagger`).
 
-To use it, you would typically install it and then use **Decorators** to document your code right inside your Controllers and DTOs:
+#### 1. Setup Swagger in `main.ts`
 
-#### 1. Documenting the Controller
+To enable the beautiful, interactive documentation page, you first "build" the document in your `main.ts` loader file:
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('Books API')
+    .setDescription('The unofficial Books API description')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document); // This creates the /api URL page
+
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+Now, if you run your server and visit `http://localhost:3000/api`, you will see your entire API fully documented!
+
+#### 2. Documenting the Controller with Decorators
+
+To add details to that Swagger page, we use **Decorators** right inside our Controllers and DTOs:
 
 ```typescript
 import { Controller, Get } from '@nestjs/common';
@@ -68,7 +96,7 @@ export class BooksController {
 }
 ```
 
-#### 2. Documenting the DTO
+#### 3. Documenting the DTO
 
 ```typescript
 import { ApiProperty } from '@nestjs/swagger';
@@ -85,7 +113,33 @@ export class CreateBookDto {
 }
 ```
 
-By adding these decorators, NestJS magically generates an "OpenAPI Specification" (a standard JSON format) that Postman can read and instantly turn into beautiful documentation.
+By adding these decorators, NestJS magically generates an "OpenAPI Specification" (a standard JSON format) that Swagger displays on its web page, and that Postman can read and instantly turn into beautiful documentation.
+
+### 🧪 Postman Auto Testing (Scripts)
+
+Postman is not just for Documentation; it is also a powerful **Testing** tool. Instead of manually checking if a request returned `200 OK`, you can write tiny JavaScript "Tests" that run automatically after the request finishes.
+
+In Postman, click on the **Scripts** tab > **Post-response**.
+
+```javascript
+// Test 1: Did the server return 200 OK?
+pm.test('Status code is 200', function () {
+  pm.response.to.have.status(200);
+});
+
+// Test 2: Did the server return data fast enough?
+pm.test('Response time is under 200ms', function () {
+  pm.expect(pm.response.responseTime).to.be.below(200);
+});
+
+// Test 3: Did the server actually return the correct Book Title?
+pm.test('Book title is correct', function () {
+  var jsonData = pm.response.json();
+  pm.expect(jsonData.title).to.eql('Harry Potter');
+});
+```
+
+When you hit "Send", Postman will now show a **Test Results (3/3)** tab declaring if your backend is behaving exactly as it should! This is highly recommended to do before saving your requests to your Collections.
 
 ### 🏆 API Documentation Best Practices
 
@@ -142,15 +196,17 @@ You now have a solid foundation in modern Backend Engineering!
 
 ## Concept Glossary
 
-| Term                    | Definition                                  | Usage                                                              |
-| ----------------------- | ------------------------------------------- | ------------------------------------------------------------------ |
-| `API Documentation`     | The instruction manual for an API           | Read by Frontend Developers to integrate with the Backend          |
-| `@ApiTags()`            | Swagger Decorator grouping endpoints        | Organizes controllers in the documentation UI                      |
-| `@ApiOperation()`       | Swagger Decorator defining an endpoint      | Provides a summary/description of what the route does              |
-| `@ApiResponse()`        | Swagger Decorator detailing responses       | Shows expected status codes (e.g., 200 vs 400) and return data     |
-| `@ApiProperty()`        | Swagger Decorator for DTO objects           | Describes exact fields (type, description, example) in the payload |
-| `Postman Collection`    | A folder-like structure saving API requests | Used to neatly organize and share tested endpoints with a team     |
-| `OpenAPI Specification` | The standard JSON format describing an API  | Swagger generates this automatically; Postman imports it           |
+| Term                    | Definition                                             | Usage                                                              |
+| ----------------------- | ------------------------------------------------------ | ------------------------------------------------------------------ |
+| `API Documentation`     | The instruction manual for an API                      | Read by Frontend Developers to integrate with the Backend          |
+| `Swagger UI`            | An interactive web page for your API                   | Automatically generated by NestJS under `/api`                     |
+| `Postman auto-scripts`  | JavaScript tests running automatically after a request | Used in Postman's "Scripts" tab to verify data and status codes    |
+| `@ApiTags()`            | Swagger Decorator grouping endpoints                   | Organizes controllers in the documentation UI                      |
+| `@ApiOperation()`       | Swagger Decorator defining an endpoint                 | Provides a summary/description of what the route does              |
+| `@ApiResponse()`        | Swagger Decorator detailing responses                  | Shows expected status codes (e.g., 200 vs 400) and return data     |
+| `@ApiProperty()`        | Swagger Decorator for DTO objects                      | Describes exact fields (type, description, example) in the payload |
+| `Postman Collection`    | A folder-like structure saving API requests            | Used to neatly organize and share tested endpoints with a team     |
+| `OpenAPI Specification` | The standard JSON format describing an API             | Swagger generates this automatically; Postman imports it           |
 
 ## Author
 
