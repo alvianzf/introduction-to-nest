@@ -25,6 +25,7 @@ Before we dive in, here is how a typical project's documentation is structured:
 In a professional engineering team, we use different "buckets" for different types of knowledge:
 
 ```mermaid
+%%{init: { 'theme': 'base', 'themeVariables': { 'lineColor': '#666', 'nodeTextColor': '#fff', 'mainBkg': '#2d3436' }}}%%
 mindmap
   root((Engineering Docs))
     (Public Facing)
