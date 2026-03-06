@@ -9,6 +9,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+import { CreateBooksDto } from './dto/create-book.dto';
 
 type Book = {
   id: string;
@@ -74,11 +75,11 @@ export class BooksController {
   }
 
   @Post()
-  create(@Body() bodyData: Book) {
-    books.push(bodyData);
+  create(@Body() CreateBooksDto: Book) {
+    books.push(CreateBooksDto);
     return {
       message: 'Book created',
-      data: bodyData,
+      data: CreateBooksDto,
     };
   }
 
