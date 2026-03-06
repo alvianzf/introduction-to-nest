@@ -1,188 +1,198 @@
 
-# Module 6 - First Week Day 2
+# Module 6 - First Week Day 3
 
 ## Topics Covered
 
-- **HTTP Methods**
-- **Nest Request and Response Object**
-- **Validation Pipes** 🔍
-- **DTO with class-validator** ✅
-- **BooksController Example** 📚
+- **Review of CRUD Operations**
+- **Service Layer Implementation**
+- **Repository Pattern**
+- **Implementing Complete CRUD API**
+- **Custom Business Logic**
+- **Request Lifecycle in NestJS** 🔄
 
 ## Lecture Notes
 
-### HTTP Methods
+### Review of CRUD Operations
 
-HTTP methods define the type of action to be performed on a resource:
-- **GET**: Retrieve data from a server
-- **POST**: Submit data to a server
-- **PUT**: Replace an entire resource
-- **PATCH**: Partially update a resource
-- **DELETE**: Remove a resource
+CRUD operations form the foundation of most applications:
+- **Create (POST)**: Add new resources to the database
+- **Read (GET)**: Retrieve existing resources
+- **Update (PUT/PATCH)**: Modify existing resources
+- **Delete (DELETE)**: Remove resources
 
-### Nest Request and Response Object
+Each operation maps to a specific HTTP method and database action.
 
-In NestJS, controllers receive `Request` and `Response` objects:
+### Service Layer Implementation
+
+Services contain business logic and are injected into controllers. They handle data processing, database interactions, and complex operations:
 
 ```typescript
-import { Controller, Get, Post, Req, Res, Body } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-@Controller('books')
-export class BooksController {
-  @Get()
-  findAll(@Req() request: Request, @Res() response: Response) {
-    console.log({ request });
-    console.log({ response });
+@Injectable()
+export class BooksService {
+  private books = [];
 
-    return {
-      message: 'List of all books',
-      data: books,
-    };
+  create(createBookDto) {
+    const newBook = { id: Date.now(), ...createBookDto };
+    this.books.push(newBook);
+    return newBook;
+  }
+
+  findAll() {
+    return this.books;
+  }
+
+  findOne(id: number) {
+    return this.books.find(book => book.id === id);
+  }
+
+  update(id: number, updateBookDto) {
+    const book = this.findOne(id);
+    if (book) Object.assign(book, updateBookDto);
+    return book;
+  }
+
+  delete(id: number) {
+    this.books = this.books.filter(book => book.id !== id);
+    return { message: 'Book deleted' };
   }
 }
 ```
 
-### Validation Pipes
+### Repository Pattern
 
-Pipes transform and validate incoming data. NestJS provides the `ValidationPipe` to automatically validate request payloads against DTO classes:
-
-```typescript
-import { ValidationPipe } from '@nestjs/common';
-
-app.useGlobalPipes(new ValidationPipe());
-```
-
-The `ValidationPipe`:
-- Validates incoming data against DTO class definitions
-- Automatically strips properties not defined in the DTO
-- Throws `BadRequestException` on validation failure
-- Can be applied globally or per-route
-
-### DTO with class-validator
-
-**Data Transfer Objects (DTOs)** define the shape and validation rules for data exchanged between client and server.
-
-#### How DTOs Function
-
-DTOs validate incoming data by decorating class properties with validation rules. When `ValidationPipe` processes a request, it:
-1. Transforms the plain request body into a DTO class instance
-2. Validates properties against their decorators
-3. Returns errors if validation fails
-
-#### Installation
-
-```bash
-pnpm install class-validator class-transformer
-```
-
-- **class-validator**: Provides validation decorators (@IsString, @IsEmail, etc.)
-- **class-transformer**: Converts plain objects to typed class instances
-
-#### Where to Put DTOs
-
-Create DTOs in a dedicated `dto` folder within your module:
-
-```
-src/
-  books/
-    dto/
-      create-book.dto.ts
-      update-book.dto.ts
-    books.controller.ts
-    books.service.ts
-```
-
-#### Rules for Using DTOs
-
-1. **One DTO per operation**: Separate `CreateBooksDto` from `UpdateBooksDto`
-2. **Import decorators from class-validator**: Use provided decorators for validation
-3. **Type properties explicitly**: Always define property types (string, number, etc.)
-4. **Use @Optional() for nullable fields**: Only if the field isn't required
-5. **Apply ValidationPipe globally or per-controller**: Ensure validation runs on all requests
-
-#### DTO Examples
+The Repository Pattern abstracts data access logic, making code more testable and maintainable:
 
 ```typescript
-import {
-  IsString,
-  IsNumber,
-  IsBoolean,
-  IsDateString,
-  IsOptional,
-  IsEmail,
-  MinLength,
-} from 'class-validator';
+import { Injectable } from '@nestjs/common';
 
-export class CreateBooksDto {
-  @IsString()
-  title: string;
+@Injectable()
+export class BooksRepository {
+  private books = [];
 
-  @IsString()
-  author: string;
+  save(book) {
+    this.books.push(book);
+    return book;
+  }
 
-  @IsNumber()
-  pages: number;
+  findAll() {
+    return this.books;
+  }
 
-  @IsOptional()
-  @IsBoolean()
-  isAvailable: boolean = true;
+  findById(id: number) {
+    return this.books.find(book => book.id === id);
+  }
 
-  @IsDateString()
-  publishedDate: Date;
-}
+  update(id: number, book) {
+    const index = this.books.findIndex(b => b.id === id);
+    if (index !== -1) this.books[index] = { ...this.books[index], ...book };
+    return this.books[index];
+  }
 
-export class CreateUserDto {
-  @IsString()
-  name: string;
-
-  @IsEmail()
-  email: string;
-
-  @MinLength(8)
-  password: string;
+  delete(id: number) {
+    this.books = this.books.filter(book => book.id !== id);
+  }
 }
 ```
 
-#### Using DTOs in Controllers
+### Implementing Complete CRUD API
+
+Integrate the service into a controller to expose CRUD endpoints:
 
 ```typescript
-@Post()
-create(@Body() bodyData: CreateBooksDto) {
-  books.push(bodyData);
-  return {
-    message: 'Book created',
-    data: bodyData,
-  };
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { BooksService } from './books.service';
+import { CreateBooksDto } from './dto/create-books.dto';
+import { UpdateBooksDto } from './dto/update-books.dto';
+
+@Controller('books')
+export class BooksController {
+  constructor(private readonly booksService: BooksService) {}
+
+  @Post()
+  create(@Body() createBookDto: CreateBooksDto) {
+    return this.booksService.create(createBookDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.booksService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.booksService.findOne(+id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateBookDto: UpdateBooksDto) {
+    return this.booksService.update(+id, updateBookDto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.booksService.delete(+id);
+  }
 }
 ```
+
+### Custom Business Logic
+
+Add domain-specific logic to services for filtering, calculations, or validations:
+
+```typescript
+@Injectable()
+export class BooksService {
+  // ... existing methods
+
+  findByAuthor(author: string) {
+    return this.books.filter(book => book.author.toLowerCase() === author.toLowerCase());
+  }
+
+  getAvailableBooks() {
+    return this.books.filter(book => book.isAvailable);
+  }
+
+  borrowBook(id: number) {
+    const book = this.findOne(id);
+    if (!book?.isAvailable) throw new Error('Book not available');
+    book.isAvailable = false;
+    return book;
+  }
+}
+```
+
+### Request Lifecycle in NestJS
+
+Understanding the request flow helps optimize and debug applications:
+
+1. **Request arrives** → HTTP request sent to the application
+2. **Middleware executes** → Global or route-specific middleware processes the request
+3. **Guards execute** → Authentication/authorization checks occur
+4. **Interceptors (before)** → Pre-processing logic before controller method
+5. **Controller method** → Route handler executes
+6. **Service layer** → Business logic and data operations
+7. **Interceptors (after)** → Post-processing logic after controller method
+8. **Response sent** → Response returned to the client
 
 ## Syntax Glossary
 
 | Term | Definition | Usage |
 |------|-----------|-------|
-| `@Controller('books')` | Decorator defining the base route for all endpoints in this class | Routes all requests to /books |
-| `@Get()` | Decorator mapping HTTP GET requests | Retrieves data without modifying it |
-| `@Get(':id')` | Decorator mapping GET requests with a route parameter | :id is a placeholder for dynamic values |
-| `@Post()` | Decorator mapping HTTP POST requests | Creates new resources |
-| `@Put(':id')` | Decorator mapping HTTP PUT requests | Updates entire existing resources |
-| `@Delete(':id')` | Decorator mapping HTTP DELETE requests | Removes existing resources |
-| `@Param('id')` | Decorator extracting URL parameters | Captures :id from route path |
-| `@Body()` | Decorator extracting JSON request body | Accesses data sent by the client |
-| `@Req()` | Injects the request object | Method parameter |
-| `@Res()` | Injects the response object | Method parameter |
-| `@IsString()` | Validates string type | Property decorator |
-| `@IsNumber()` | Validates number type | Property decorator |
-| `@IsBoolean()` | Validates boolean type | Property decorator |
-| `@IsDateString()` | Validates date string format | Property decorator |
-| `@IsEmail()` | Validates email format | Property decorator |
-| `@IsOptional()` | Makes field optional | Property decorator |
-| `@MinLength()` | Validates minimum length | Property decorator |
-| `type Book` | TypeScript type alias | Defines the shape of a book object |
-| `books.find()` | Array method searching for first matching element | Retrieves a single book by condition |
-| `books.splice()` | Array method removing elements | Deletes an item at a specific index |
-| `ValidationPipe` | Validates incoming data against DTOs | Global or per-route |
-| `class-validator` | Data validation decorators library | Installation dependency |
-| `class-transformer` | Object transformation library | Installation dependency |
+| `@Injectable()` | Decorator marking a class as a provider for dependency injection | Services, repositories |
+| `constructor(private service: Service)` | Dependency injection via constructor | Injects services into controllers |
+| `@Param('id')` | Extracts URL route parameters | Captures dynamic values from path |
+| `+id` | Type coercion operator | Converts string parameter to number |
+| `find()` | Array method returning first match | Retrieves single item by condition |
+| `filter()` | Array method returning filtered array | Retrieves multiple items by condition |
+| `Repository Pattern` | Data access abstraction layer | Separates data logic from business logic |
+| `Service Layer` | Business logic container | Handles CRUD and custom operations |
+| `Object.assign()` | Merges object properties | Updates object with new values |
+| `Middleware` | Processes requests before controllers | Logging, authentication setup |
+| `Guards` | Authorization checks before handlers | Permission validation |
+| `Interceptors` | Pre/post-processing hooks | Logging, error handling, transformation |
+| `Request Lifecycle` | Path from request to response | Understanding NestJS execution order |
 
 ## Author
 
