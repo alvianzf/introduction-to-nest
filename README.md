@@ -174,20 +174,13 @@ A **Collection** in Postman is simply a folder structure that holds your API req
 
 By organizing your requests into collections and folders, you make it incredibly easy for your team to navigate large APIs.
 
-### 🤝 Sharing Documentation with Team
+### 🤝 Sharing & Collaboration
 
 Building a great API is only half the battle; the other half is letting your team know how to use it! Postman gives us several seamless ways to share our work:
 
 - **Team Workspaces:** You can invite your teammates directly into a Postman Workspace. This is the best way to collaborate because everyone sees live updates as you add or change requests.
 - **Public Documentation:** This is one of Postman's coolest features! You can "Publish" your collection to create a beautiful, public web URL. This is perfect for external partners or Frontend developers who don't want to open the Postman app itself—they can just read your docs in their browser.
-- **Exporting Files:** If you need to keep things simple and offline, you can always export your collection as a `.json` file and share it over Slack or Email for others to import.
-
-### 🚀 Export and Import Collections
-
-If you don't want to use Workspaces, you can physically share your documentation file.
-
-- **Export:** Right-click the Postman Collection -> Export. It gives you a `.json` file containing all your requests and data.
-- **Import:** Anyone can click "Import" in their Postman and select that JSON file to instantly get all your requests on their own computer.
+- **Export & Import Files:** If you need to keep things simple and offline, you can right-click your collection and select **Export** to save it as a `.json` file. Anyone else can then click **Import** in their Postman to instantly get all your requests, examples, and tests on their own computer.
 
 ---
 
