@@ -176,10 +176,11 @@ By organizing your requests into collections and folders, you make it incredibly
 
 ### 🤝 Sharing Documentation with Team
 
-Once you have a great Postman Collection with saved examples and descriptions, you can share it:
+Building a great API is only half the battle; the other half is letting your team know how to use it! Postman gives us several seamless ways to share our work:
 
-1. **Workspaces:** Invite your team to a Postman Workspace so they can see live updates as you build the API.
-2. **Publish Docs:** Use Postman's "Publish" feature to create a public, readable web URL containing your documentation.
+- **Team Workspaces:** You can invite your teammates directly into a Postman Workspace. This is the best way to collaborate because everyone sees live updates as you add or change requests.
+- **Public Documentation:** This is one of Postman's coolest features! You can "Publish" your collection to create a beautiful, public web URL. This is perfect for external partners or Frontend developers who don't want to open the Postman app itself—they can just read your docs in their browser.
+- **Exporting Files:** If you need to keep things simple and offline, you can always export your collection as a `.json` file and share it over Slack or Email for others to import.
 
 ### 🚀 Export and Import Collections
 
