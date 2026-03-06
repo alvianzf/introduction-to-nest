@@ -34,6 +34,14 @@ In this structure, the application is divided into specific layers, each with a 
 2. **Business/Service Layer (Services):** Contains the core business logic, calculations, and rules. It takes requests from the controller, processes them, and returns the result.
 3. **Data Access Layer (Repositories):** Responsible for directly interacting with the database or storage system.
 
+```mermaid
+flowchart LR
+    Client([Client]) --> Controller[Controller<br>(Presentation)]
+    Controller --> Service[Service<br>(Business Logic)]
+    Service --> Repository[Repository<br>(Data Access)]
+    Repository --> Database[(Database)]
+```
+
 **Why separate into layers?**
 
 - **Separation of Concerns (SoC):** Each part of your code has one specific job. Controllers don't write SQL, and repositories don't handle HTTP headers.
@@ -43,6 +51,16 @@ In this structure, the application is divided into specific layers, each with a 
 ### Type Definitions & Domain Models
 
 Before building our services and repositories, it is best practice to define our domain models (types and interfaces) in a dedicated location, such as `src/types/book.type.ts`.
+
+```text
+src/
+├── types/
+│   └── book.type.ts       # Shared Domain Model
+├── books/
+│   ├── books.controller.ts
+│   ├── books.service.ts
+│   └── books.repository.ts
+```
 
 Why separate types into their own folder?
 
@@ -234,6 +252,23 @@ Understanding the request flow helps optimize and debug applications:
 6. **Service layer** → Business logic and data operations
 7. **Interceptors (after)** → Post-processing logic after controller method
 8. **Response sent** → Response returned to the client
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Middleware
+    participant Guard
+    participant InterceptorBefore as Interceptor (Before)
+    participant Controller as Route Handler
+    participant InterceptorAfter as Interceptor (After)
+
+    Client->>Middleware: HTTP Request
+    Middleware->>Guard: Processed Request
+    Guard->>InterceptorBefore: Validated Request
+    InterceptorBefore->>Controller: Pre-processed Request
+    Controller->>InterceptorAfter: Result
+    InterceptorAfter->>Client: HTTP Response
+```
 
 ## Syntax Glossary
 
