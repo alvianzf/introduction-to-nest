@@ -1,4 +1,3 @@
-
 # Module 6 - First Week Day 3
 
 ## Topics Covered
@@ -15,12 +14,23 @@
 ### Review of CRUD Operations
 
 CRUD operations form the foundation of most applications:
+
 - **Create (POST)**: Add new resources to the database
 - **Read (GET)**: Retrieve existing resources
 - **Update (PUT/PATCH)**: Modify existing resources
 - **Delete (DELETE)**: Remove resources
 
 Each operation maps to a specific HTTP method and database action.
+
+### Type Definitions & Domain Models
+
+Before building our services and repositories, it is best practice to define our domain models (types and interfaces) in a dedicated location, such as `src/types/book.type.ts`.
+
+Why separate types into their own folder?
+
+- **Single Source of Truth:** Establishes a single place for our domain models.
+- **Prevents Duplication:** We avoid redefining the `Book` type in our Controller, Service, and Repository.
+- **Clean Architecture:** It allows the type to be cleanly imported across different layers without tightly coupling those layers to a specific implementation file.
 
 ### Service Layer Implementation
 
@@ -44,7 +54,7 @@ export class BooksService {
   }
 
   findOne(id: number) {
-    return this.books.find(book => book.id === id);
+    return this.books.find((book) => book.id === id);
   }
 
   update(id: number, updateBookDto) {
@@ -54,7 +64,7 @@ export class BooksService {
   }
 
   delete(id: number) {
-    this.books = this.books.filter(book => book.id !== id);
+    this.books = this.books.filter((book) => book.id !== id);
     return { message: 'Book deleted' };
   }
 }
@@ -62,7 +72,20 @@ export class BooksService {
 
 ### Repository Pattern
 
-The Repository Pattern abstracts data access logic, making code more testable and maintainable:
+The Repository Pattern abstracts data access logic, making code more testable and maintainable.
+
+#### What it is and how it works
+
+A repository sits between your service logic and the database. Instead of a service directly querying the database (or in our case, an array), it calls methods on the repository. The repository translates these calls into the specific operations needed for the chosen storage mechanism. This provides a unified, object-oriented interface for data access.
+
+#### Why it is good
+
+- **Separation of Concerns:** Services only care about _what_ data to get or save, not _how_ to get or save it.
+- **Testability:** You can easily mock repositories in unit tests without needing a real database connection.
+- **Maintainability:** If you switch from PostgreSQL to MongoDB (or an array to a real DB), you only need to update the repository methods; your service logic remains untouched.
+- **Centralized Data Logic:** Prevents duplicate queries across multiple services.
+
+> **Note on Mock Data:** Even when using a Repository, we often extract hardcoded mock data (like a pre-populated books array) into a separate file (e.g., `src/books/data/books.mock.ts`). We do this because we haven't connected a real database yet. Isolating this mock data keeps the repository logic clean, focused only on operations, and closely mimics how we would later import a database client to make a call. It makes the future transition to a real database much smoother.
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -81,27 +104,43 @@ export class BooksRepository {
   }
 
   findById(id: number) {
-    return this.books.find(book => book.id === id);
+    return this.books.find((book) => book.id === id);
   }
 
   update(id: number, book) {
-    const index = this.books.findIndex(b => b.id === id);
+    const index = this.books.findIndex((b) => b.id === id);
     if (index !== -1) this.books[index] = { ...this.books[index], ...book };
     return this.books[index];
   }
 
   delete(id: number) {
-    this.books = this.books.filter(book => book.id !== id);
+    this.books = this.books.filter((book) => book.id !== id);
   }
 }
 ```
+
+#### Alternatives to the Repository Pattern
+
+Depending on the size and complexity of the project, you might consider other patterns:
+
+- **Active Record:** Models directly contain the methods to interact with the database (e.g., `Book.save()`, `Book.find()`). Good for simpler schemas but can lead to bloated models. (Often used tightly with ORMs like TypeORM or Sequelize).
+- **Data Access Object (DAO):** Similar to repositories but usually mapped closer to the specific tables and low-level queries rather than high-level domain entities.
+- **Direct ORM usage in Services:** For very small microservices or rapid prototyping, injecting the ORM directly into the service might be faster, though it sacrifices the clean separation.
 
 ### Implementing Complete CRUD API
 
 Integrate the service into a controller to expose CRUD endpoints:
 
 ```typescript
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBooksDto } from './dto/create-books.dto';
 import { UpdateBooksDto } from './dto/update-books.dto';
@@ -147,11 +186,13 @@ export class BooksService {
   // ... existing methods
 
   findByAuthor(author: string) {
-    return this.books.filter(book => book.author.toLowerCase() === author.toLowerCase());
+    return this.books.filter(
+      (book) => book.author.toLowerCase() === author.toLowerCase(),
+    );
   }
 
   getAvailableBooks() {
-    return this.books.filter(book => book.isAvailable);
+    return this.books.filter((book) => book.isAvailable);
   }
 
   borrowBook(id: number) {
@@ -178,21 +219,21 @@ Understanding the request flow helps optimize and debug applications:
 
 ## Syntax Glossary
 
-| Term | Definition | Usage |
-|------|-----------|-------|
-| `@Injectable()` | Decorator marking a class as a provider for dependency injection | Services, repositories |
-| `constructor(private service: Service)` | Dependency injection via constructor | Injects services into controllers |
-| `@Param('id')` | Extracts URL route parameters | Captures dynamic values from path |
-| `+id` | Type coercion operator | Converts string parameter to number |
-| `find()` | Array method returning first match | Retrieves single item by condition |
-| `filter()` | Array method returning filtered array | Retrieves multiple items by condition |
-| `Repository Pattern` | Data access abstraction layer | Separates data logic from business logic |
-| `Service Layer` | Business logic container | Handles CRUD and custom operations |
-| `Object.assign()` | Merges object properties | Updates object with new values |
-| `Middleware` | Processes requests before controllers | Logging, authentication setup |
-| `Guards` | Authorization checks before handlers | Permission validation |
-| `Interceptors` | Pre/post-processing hooks | Logging, error handling, transformation |
-| `Request Lifecycle` | Path from request to response | Understanding NestJS execution order |
+| Term                                    | Definition                                                       | Usage                                    |
+| --------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- |
+| `@Injectable()`                         | Decorator marking a class as a provider for dependency injection | Services, repositories                   |
+| `constructor(private service: Service)` | Dependency injection via constructor                             | Injects services into controllers        |
+| `@Param('id')`                          | Extracts URL route parameters                                    | Captures dynamic values from path        |
+| `+id`                                   | Type coercion operator                                           | Converts string parameter to number      |
+| `find()`                                | Array method returning first match                               | Retrieves single item by condition       |
+| `filter()`                              | Array method returning filtered array                            | Retrieves multiple items by condition    |
+| `Repository Pattern`                    | Data access abstraction layer                                    | Separates data logic from business logic |
+| `Service Layer`                         | Business logic container                                         | Handles CRUD and custom operations       |
+| `Object.assign()`                       | Merges object properties                                         | Updates object with new values           |
+| `Middleware`                            | Processes requests before controllers                            | Logging, authentication setup            |
+| `Guards`                                | Authorization checks before handlers                             | Permission validation                    |
+| `Interceptors`                          | Pre/post-processing hooks                                        | Logging, error handling, transformation  |
+| `Request Lifecycle`                     | Path from request to response                                    | Understanding NestJS execution order     |
 
 ## Author
 
@@ -200,4 +241,3 @@ Understanding the request flow helps optimize and debug applications:
 
 - Web: https://alvianzf.id
 - LinkedIn: https://linkedin.com/in/alvianzf
-
