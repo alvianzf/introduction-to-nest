@@ -6,6 +6,8 @@ import {
   Delete,
   Param,
   Body,
+  Req,
+  Res,
 } from '@nestjs/common';
 
 type Book = {
@@ -22,10 +24,12 @@ const books: Book[] = [
 @Controller('books')
 export class BooksController {
   @Get()
-  findAll() {
+  findAll(@Req() request: Request, @Res() response: Response) {
     return {
       message: 'List of all books',
       data: books,
+      requestObject: request,
+      responseObject: response,
     };
   }
 
