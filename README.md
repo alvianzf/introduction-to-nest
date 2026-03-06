@@ -1,98 +1,84 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# RevoU: Introduction to NestJS (Module 6)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Welcome to Module 6! This repository contains all the code examples, lecture notes, and extra material you need to learn Backend Development with NestJS.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Topics Covered
 
-## Description
+- **How to Use This Repository** 🗺️
+- **What is Backend Development?** 🏗️
+- **What is NestJS?** 🦁
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Lecture Notes
 
-## Project setup
+### 🗺️ How to Use This Repository
 
-```bash
-$ pnpm install
+This repository is designed to be your interactive textbook.
+
+1. **Branches as Lessons:** Every lesson has its own dedicated branch (e.g., `module-6-day-1`, `module-6-day-2`). You should use them in order as the course progresses.
+2. **Read the README:** When you switch to a branch, the `README.md` file will update to show you the specific Lecture Notes for that exact day.
+3. **The "Extra Lesson":** On every branch, alongside the README, you will find one "Extra Lesson" markdown file (e.g., `LIBRARY_VS_FRAMEWORK.md`, `ARCHITECTURE_PRINCIPLES.md`). These contain crucial context to help you understand abstract Backend and Engineering concepts. They are written specifically for career switchers and _always_ relate directly to the lesson at hand.
+4. **Code is an Example:** The code in this repository serves as a reference. During live sessions, **please pay attention to the instructor**—the live explanation is where the real learning happens!
+
+```mermaid
+flowchart LR
+    Start([main Branch]) --> Day1["module-6-day-1 (Intro to REST)"]
+    Day1 --> Day2["module-6-day-2 (Validation & DTOs)"]
+    Day2 --> Day3["module-6-day-3 (Architecture)"]
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ pnpm run start
+### 🏗️ What is Backend Development?
 
-# watch mode
-$ pnpm run start:dev
+Since you already know React (Frontend), it helps to know where the Backend fits in.
 
-# production mode
-$ pnpm run start:prod
+The **Frontend** is what the user sees and interacts with (buttons, forms, animations).
+The **Backend** is what happens behind the scenes. It handles the heavy lifting, security, and permanent memory.
+
+```mermaid
+flowchart LR
+    Frontend(["💻 Frontend (React/NextJS)"])
+    Server["🖥️ Server (NestJS)"]
+    Database[("🗄️ Database (PostgreSQL)")]
+
+    Frontend -- "1. Sends Data" --> Server
+    Server -- "2. Validates & Processes" --> Database
+    Database -- "3. Saves Data" --> Server
+    Server -- "4. Returns Success" --> Frontend
 ```
 
-## Run tests
+As a Backend Developer, your job is to:
 
-```bash
-# unit tests
-$ pnpm run test
+1. Receive requests from the Frontend.
+2. Ensure the request is safe and perfectly formatted.
+3. Apply "Business Logic" (Rules like: "Can this user afford this item?").
+4. Retrieve or save data to the Database.
+5. Send the exact right data back to the Frontend.
 
-# e2e tests
-$ pnpm run test:e2e
+---
 
-# test coverage
-$ pnpm run test:cov
+### 🦁 What is NestJS?
+
+**NestJS** is a powerful Backend Framework for Node.js.
+
+Think of it as a pre-built factory. It provides you with a highly organized, strict folder structure so that your code doesn't become a messy pile of spaghetti as your app grows.
+
+Unlike React (which is a Library that lets you do whatever you want), NestJS is a **Framework**. It has strict rules:
+
+```text
+src/
+├── app.module.ts            # The Engine of the Factory
+├── items/
+│   ├── items.controller.ts  # The Receptionist (Answers HTTP requests)
+│   ├── items.service.ts     # The Worker (Does the actual logic)
+│   └── items.repository.ts  # The Vault Manager (Talks to the DB)
 ```
 
-## Deployment
+Because it uses **TypeScript** and **Object-Oriented Programming (OOP)**, it is one of the most popular tools used in enterprise companies today.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Author
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**Alvian Zachry Faturrahman**
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Web: https://alvianzf.id
+- LinkedIn: https://linkedin.com/in/alvianzf
