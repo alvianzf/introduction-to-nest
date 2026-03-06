@@ -158,21 +158,31 @@ create(@Body() bodyData: CreateBooksDto) {
 
 ## Syntax Glossary
 
-| Syntax | Function |
-|--------|----------|
-| `@Req()` | Injects the request object into a method parameter |
-| `@Res()` | Injects the response object into a method parameter |
-| `@Body()` | Extracts and validates the request body payload |
-| `@IsString()` | Validates that a value is a string |
-| `@IsNumber()` | Validates that a value is a number |
-| `@IsBoolean()` | Validates that a value is a boolean |
-| `@IsDateString()` | Validates that a value is a valid date string |
-| `@IsEmail()` | Validates that a value is a valid email format |
-| `@IsOptional()` | Makes a field optional (allows undefined/null) |
-| `@MinLength()` | Validates minimum string length |
-| `ValidationPipe` | Global pipe that validates incoming data against DTOs |
-| `class-validator` | Library providing decorators for data validation |
-| `class-transformer` | Library for transforming plain objects to class instances |
+| Term | Definition | Usage |
+|------|-----------|-------|
+| `@Controller('books')` | Decorator defining the base route for all endpoints in this class | Routes all requests to /books |
+| `@Get()` | Decorator mapping HTTP GET requests | Retrieves data without modifying it |
+| `@Get(':id')` | Decorator mapping GET requests with a route parameter | :id is a placeholder for dynamic values |
+| `@Post()` | Decorator mapping HTTP POST requests | Creates new resources |
+| `@Put(':id')` | Decorator mapping HTTP PUT requests | Updates entire existing resources |
+| `@Delete(':id')` | Decorator mapping HTTP DELETE requests | Removes existing resources |
+| `@Param('id')` | Decorator extracting URL parameters | Captures :id from route path |
+| `@Body()` | Decorator extracting JSON request body | Accesses data sent by the client |
+| `@Req()` | Injects the request object | Method parameter |
+| `@Res()` | Injects the response object | Method parameter |
+| `@IsString()` | Validates string type | Property decorator |
+| `@IsNumber()` | Validates number type | Property decorator |
+| `@IsBoolean()` | Validates boolean type | Property decorator |
+| `@IsDateString()` | Validates date string format | Property decorator |
+| `@IsEmail()` | Validates email format | Property decorator |
+| `@IsOptional()` | Makes field optional | Property decorator |
+| `@MinLength()` | Validates minimum length | Property decorator |
+| `type Book` | TypeScript type alias | Defines the shape of a book object |
+| `books.find()` | Array method searching for first matching element | Retrieves a single book by condition |
+| `books.splice()` | Array method removing elements | Deletes an item at a specific index |
+| `ValidationPipe` | Validates incoming data against DTOs | Global or per-route |
+| `class-validator` | Data validation decorators library | Installation dependency |
+| `class-transformer` | Object transformation library | Installation dependency |
 
 ## Author
 
