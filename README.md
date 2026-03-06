@@ -56,8 +56,6 @@ flowchart LR
 - **Onboarding:** New developers can instantly start working with your API.
 - **Contract:** It acts as an agreement between the Frontend and Backend on exactly how data should be formatted.
 
-![Swagger Documentation Illustration](./docs/images/swagger-ui.png)
-
 ### 🎨 Documenting Endpoints with Swagger
 
 In NestJS, we automate our documentation using the **Swagger** module (`@nestjs/swagger`). This ensures our docs are always in sync with our code and provides a beautiful, interactive UI for anyone using our API.

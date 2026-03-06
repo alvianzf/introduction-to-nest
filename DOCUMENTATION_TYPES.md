@@ -4,8 +4,6 @@ As a Backend Developer, your job is not just to write code that computers unders
 
 While **Swagger** and **Postman** are perfect for explaining _how to use an endpoint_, they don't explain _why_ we built it, _how_ the whole system works, or _what decisions_ we made along the way.
 
-![Documentation Ecosystem Illustration](./docs/images/documentation-ecosystem.png)
-
 ## 🌳 Documentation Tree Structure
 
 Before we dive in, here is how a typical project's documentation is structured:
