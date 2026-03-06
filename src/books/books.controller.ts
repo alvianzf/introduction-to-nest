@@ -25,11 +25,12 @@ const books: Book[] = [
 export class BooksController {
   @Get()
   findAll(@Req() request: Request, @Res() response: Response) {
+    console.log({ request });
+    console.log({ response });
+
     return {
       message: 'List of all books',
       data: books,
-      requestObject: request,
-      responseObject: response,
     };
   }
 
