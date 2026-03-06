@@ -36,10 +36,10 @@ In this structure, the application is divided into specific layers, each with a 
 
 ```mermaid
 flowchart LR
-    Client([Client]) --> Controller[Controller<br>(Presentation)]
-    Controller --> Service[Service<br>(Business Logic)]
-    Service --> Repository[Repository<br>(Data Access)]
-    Repository --> Database[(Database)]
+    Client([Client]) --> Controller["Controller (Presentation)"]
+    Controller --> Service["Service (Business Logic)"]
+    Service --> Repository["Repository (Data Access)"]
+    Repository --> Database[("Database")]
 ```
 
 **Why separate into layers?**
