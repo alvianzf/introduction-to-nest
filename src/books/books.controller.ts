@@ -21,7 +21,6 @@ const books: Book[] = [
 
 @Controller('books')
 export class BooksController {
-  // implement books CRUD here
   @Get()
   findAll() {
     return {
