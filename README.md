@@ -3,8 +3,8 @@
 ## Topics Covered
 
 - **Importance of API Documentation** 📖
+- **Documenting Endpoints with Swagger** 🎨
 - **Postman for API Documentation** 📬
-- **Documenting Endpoints with Decorators** 🎨
 - **API Documentation Best Practices** 🏆
 - **Creating Postman Collections** �️
 - **Sharing Documentation with Team** 🤝
@@ -34,15 +34,6 @@ flowchart LR
 - **Saves Time:** No more constant messages asking "what does this endpoint return?"
 - **Onboarding:** New developers can instantly start working with your API.
 - **Contract:** It acts as an agreement between the Frontend and Backend on exactly how data should be formatted.
-
-### 📬 Postman for API Documentation
-
-Postman isn't just for checking if your server works; it's a powerful tool for generating and hosting beautiful API documentation that anyone can read.
-
-1. You create a request in Postman.
-2. You save it to a "Collection".
-3. Add descriptions and save example responses.
-4. Postman automatically generates a web page with code snippets for frontend developers to use.
 
 ### 🎨 Documenting Endpoints with Swagger
 
@@ -123,6 +114,15 @@ export class CreateBooksDto {
 > **Accessing the Docs:** After following these steps, simply run `pnpm start:dev` and navigate to `http://localhost:3000/api` to see your documentation in action!
 
 By adding these decorators, NestJS magically generates an "OpenAPI Specification" (a standard JSON format) that Swagger displays on its web page, and that Postman can read and instantly turn into beautiful documentation.
+
+### 📬 Postman for API Documentation
+
+Postman isn't just for checking if your server works; it's a powerful tool for generating and hosting beautiful API documentation that anyone can read.
+
+1. You create a request in Postman.
+2. You save it to a "Collection".
+3. Add descriptions and save example responses.
+4. Postman automatically generates a web page with code snippets for frontend developers to use.
 
 ### 🧪 Postman Auto Testing (Scripts)
 
