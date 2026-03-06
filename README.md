@@ -32,7 +32,7 @@ Here is how our project is organized now that we've added documentation layers:
 ---
 
 > [!TIP]
-> **Extra Lesson:** Today we also have a supplementary guide on [Documentation Types (Confluence, ADRs, etc.)](file:///Users/azfaturrahman/Projects/revou/introduction-to-nest/DOCUMENTATION_TYPES.md). Check it out to understand how professional engineering teams share knowledge!
+> **Extra Lesson:** Today we also have a supplementary guide on [Documentation Types (Confluence, ADRs, etc.)](./DOCUMENTATION_TYPES.md). Check it out to understand how professional engineering teams share knowledge!
 
 ### 📖 Importance of API Documentation
 
@@ -56,7 +56,7 @@ flowchart LR
 - **Onboarding:** New developers can instantly start working with your API.
 - **Contract:** It acts as an agreement between the Frontend and Backend on exactly how data should be formatted.
 
-![Swagger Documentation Illustration](/Users/azfaturrahman/.gemini/antigravity/brain/d8eacd08-ea80-442e-a277-4f60539a7bf4/swagger_illustration_1772791047073.png)
+![Swagger Documentation Illustration](./docs/images/swagger-ui.png)
 
 ### 🎨 Documenting Endpoints with Swagger
 

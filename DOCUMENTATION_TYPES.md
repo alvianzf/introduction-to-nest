@@ -4,6 +4,8 @@ As a Backend Developer, your job is not just to write code that computers unders
 
 While **Swagger** and **Postman** are perfect for explaining _how to use an endpoint_, they don't explain _why_ we built it, _how_ the whole system works, or _what decisions_ we made along the way.
 
+![Documentation Ecosystem Illustration](./docs/images/documentation-ecosystem.png)
+
 ## 🌳 Documentation Tree Structure
 
 Before we dive in, here is how a typical project's documentation is structured:
@@ -58,7 +60,7 @@ Imagine you join a company and ask: _"Why are we using PostgreSQL instead of Mon
 **ADRs** solve this by recording a specific technical choice at a specific point in time.
 
 > [!NOTE]
-> **Real Example:** I have created a mock ADR for this project! You can find it here: [0001-use-postgres.md](file:///Users/azfaturrahman/Projects/revou/introduction-to-nest/docs/adrs/0001-use-postgres.md).
+> **Real Example:** I have created a mock ADR for this project! You can find it here: [0001-use-postgres.md](./docs/adrs/0001-use-postgres.md).
 
 ---
 
