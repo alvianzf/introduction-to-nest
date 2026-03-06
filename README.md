@@ -3,6 +3,8 @@
 ## Topics Covered
 
 - **Review of CRUD Operations**
+- **Layered Architecture & N-Tier**
+- **Type Definitions & Domain Models**
 - **Service Layer Implementation**
 - **Repository Pattern**
 - **Implementing Complete CRUD API**
@@ -21,6 +23,22 @@ CRUD operations form the foundation of most applications:
 - **Delete (DELETE)**: Remove resources
 
 Each operation maps to a specific HTTP method and database action.
+
+### Layered Architecture (N-Tier Architecture)
+
+To keep our application organized as it grows, NestJS encourages a **Layered Architecture** (often referred to as **N-Tier Architecture**, commonly implemented as a 3-tier architecture).
+
+In this structure, the application is divided into specific layers, each with a distinct responsibility:
+
+1. **Presentation Layer (Controllers):** Handles incoming HTTP requests, validates input, and sends HTTP responses. It doesn't contain complex logic.
+2. **Business/Service Layer (Services):** Contains the core business logic, calculations, and rules. It takes requests from the controller, processes them, and returns the result.
+3. **Data Access Layer (Repositories):** Responsible for directly interacting with the database or storage system.
+
+**Why separate into layers?**
+
+- **Separation of Concerns (SoC):** Each part of your code has one specific job. Controllers don't write SQL, and repositories don't handle HTTP headers.
+- **Maintainability & Scalability:** You can easily find where to fix a bug or add a feature. If you want to change databases, you only touch the Data Access layer. If you want to add GraphQL alongside your REST API, you just add new Controllers/Resolvers without touching the Service logic.
+- **Testability:** You can test business logic in isolation by mocking the data access layer, leading to faster and more reliable unit tests.
 
 ### Type Definitions & Domain Models
 
