@@ -5,10 +5,10 @@
 - **Importance of API Documentation** 📖
 - **Documenting Endpoints with Swagger** 🎨
 - **Postman for API Documentation** 📬
+- **Postman Auto Testing (Scripts)** 🧪
 - **API Documentation Best Practices** 🏆
-- **Creating Postman Collections** �️
-- **Sharing Documentation with Team** 🤝
-- **Export and Import Collections** 🚀
+- **Creating Postman Collections** 🗂️
+- **Sharing & Collaboration** 🤝
 - **Course Recap** 🎓
 
 ## Lecture Notes
