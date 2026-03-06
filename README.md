@@ -46,72 +46,87 @@ Postman isn't just for checking if your server works; it's a powerful tool for g
 
 ### 🎨 Documenting Endpoints with Swagger
 
-In NestJS, we can automate our documentation so we never have to write it step-by-step by hand using the **Swagger** module (`@nestjs/swagger`).
+In NestJS, we automate our documentation using the **Swagger** module (`@nestjs/swagger`). This ensures our docs are always in sync with our code.
 
-#### 1. Setup Swagger in `main.ts`
+#### Step 1. Install Dependencies
 
-To enable the beautiful, interactive documentation page, you first "build" the document in your `main.ts` loader file:
+Run the following command in your terminal to add the necessary Swagger tools to your project.
+
+- **Action:** `pnpm add @nestjs/swagger`
+- **Purpose:** Adds the library that generates OpenAPI specifications and the Swagger UI.
+
+#### Step 2. Initialize Swagger in `main.ts`
+
+Add the `DocumentBuilder` and `SwaggerModule` setup to your entry file.
+
+- **File:** `src/main.ts`
+- **Action:**
 
 ```typescript
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+// Inside bootstrap()
+const config = new DocumentBuilder()
+  .setTitle('Books API')
+  .setDescription('The unofficial Books API description')
+  .setVersion('1.0')
+  .addTag('books')
+  .build();
 
-  const config = new DocumentBuilder()
-    .setTitle('Books API')
-    .setDescription('The unofficial Books API description')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); // This creates the /api URL page
-
-  await app.listen(3000);
-}
-bootstrap();
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('api', app, document);
 ```
 
-Now, if you run your server and visit `http://localhost:3000/api`, you will see your entire API fully documented!
+- **Purpose:** This "builds" the documentation and tells NestJS to serve the interactive UI at the `/api` route.
 
-#### 2. Documenting the Controller with Decorators
+#### Step 3. Tag the Controller
 
-To add details to that Swagger page, we use **Decorators** right inside our Controllers and DTOs:
+Add the `@ApiTags` decorator to your controller class.
+
+- **File:** `src/books/books.controller.ts`
+- **Action:** Add `@ApiTags('books')` above the `@Controller` decorator.
+- **Purpose:** This groups all book-related endpoints together in the Swagger UI and Postman.
+
+#### Step 4. Describe Specific Endpoints
+
+Use `@ApiOperation`, `@ApiResponse`, and `@ApiParam` on your controller methods.
+
+- **File:** `src/books/books.controller.ts`
+- **Action:**
 
 ```typescript
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-
-@ApiTags('books') // Groups endpoints under "books" in Swagger/Postman
-@Controller('books')
-export class BooksController {
-  @Get()
-  @ApiOperation({ summary: 'Get all books' }) // Describes what the endpoint does
-  @ApiResponse({ status: 200, description: 'Return all available books.' })
-  findAll() {
-    return [];
-  }
-}
+@Get(':id')
+@ApiOperation({ summary: 'Retrieve a single book by ID' })
+@ApiParam({ name: 'id', description: 'The unique ID of the book', example: '1' })
+@ApiResponse({ status: 200, description: 'Return the found book.' })
+@ApiResponse({ status: 404, description: 'Book not found.' })
+findOne(@Param('id') id: string) { ... }
 ```
 
-#### 3. Documenting the DTO
+- **Purpose:** This provides human-readable summaries and explains what each status code (200, 404) means.
+
+#### Step 5. Define Data Models in DTOs
+
+Add `@ApiProperty` decorators to your class properties.
+
+- **File:** `src/books/dto/create-book.dto.ts`
+- **Action:**
 
 ```typescript
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateBookDto {
-  @ApiProperty({
-    example: 'Harry Potter',
-    description: 'The title of the book',
-  })
+export class CreateBooksDto {
+  @ApiProperty({ example: '1984', description: 'The title of the book' })
   title: string;
 
-  @ApiProperty({ example: 300, description: 'Number of pages' })
+  @ApiProperty({ example: 328, description: 'Number of pages' })
   pages: number;
 }
 ```
+
+- **Purpose:** This tells Swagger exactly what fields the Frontend needs to send in a POST/PUT request and provides copy-pasteable examples.
+
+> **Accessing the Docs:** After following these steps, run `pnpm start:dev` and go to `http://localhost:3000/api`.
 
 By adding these decorators, NestJS magically generates an "OpenAPI Specification" (a standard JSON format) that Swagger displays on its web page, and that Postman can read and instantly turn into beautiful documentation.
 
