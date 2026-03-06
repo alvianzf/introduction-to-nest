@@ -58,6 +58,29 @@ In our project, our `BooksController` calls `this.booksService.findAll()`. The c
 
 NestJS is heavily built on OOP. When you look at your NestJS code, you will see `class BooksController`, `class BooksService`, and `class BooksRepository`.
 
+```mermaid
+classDiagram
+    class BooksController {
+      -booksService: BooksService
+      +findAll()
+      +create()
+    }
+    class BooksService {
+      -booksRepository: BooksRepository
+      +findAll()
+      +create()
+    }
+    class BooksRepository {
+      -books: Book[]
+      +findAll()
+      +create()
+      +remove()
+    }
+
+    BooksController --> BooksService : Calls
+    BooksService --> BooksRepository : Calls
+```
+
 Without understanding that a `class` is just a specialized Object holding private data (Encapsulation) and performing specific tasks (Abstraction), the structure of NestJS will feel confusing.
 
 ---
@@ -81,6 +104,21 @@ What if the Chef also had to take reservations and serve the food? They would be
 ### How this relates to our Layered Architecture
 
 This is the exact reason we separate our application into layers. Let's look at our project:
+
+```mermaid
+sequenceDiagram
+    participant Client as Postman / Browser
+    participant Controller as 🍽️ BooksController (Waiter)
+    participant Service as 👨‍🍳 BooksService (Chef)
+    participant Repo as 📦 BooksRepository (Pantry)
+
+    Client->>Controller: GET /books (Order Food)
+    Controller->>Service: findAll() (Give Order to Chef)
+    Service->>Repo: findAll() (Get Ingredients)
+    Repo-->>Service: Return Book[] (Raw Ingredients)
+    Service-->>Controller: Return Book[] (Cooked Meal)
+    Controller-->>Client: 200 OK (Serve Food)
+```
 
 1. **Controllers (`BooksController`):** Their _only_ responsibility is HTTP. They take the request, extract the ID or Body, give it to the Service, and return whatever the Service replies with.
 2. **Services (`BooksService`):** Their _only_ responsibility is the "business logic". If we needed to check if a user had permission to create a book, or if a book's `pages` must be greater than 0, that logic goes here. It doesn't care if the request came from HTTP or a CLI.
@@ -110,6 +148,25 @@ A famous quote by Martin Fowler sums it up:
 - **Meaningful Names:** We named our function `findAll()` rather than `getEverything()`. We named our variable `booksMock` instead of `data`. It is immediately clear what they hold.
 - **DRY Principle:** In our recent updates, we extracted the `Book` type into `src/types/book.type.ts`. If we hadn't done this, we would have had to type out `{id: string, title: string...}` inside the Repository, the Service, and the DTO. If we later added a `publisher` field, we'd have to update it in three places. By keeping it DRY, we only update it once.
 - **Separating Mock Data:** We took our hardcoded array out of the `BooksRepository` and put it in `books.mock.ts`. This makes the Repository class shorter and easier to read, focusing purely on logic instead of holding 30 lines of fake data.
+
+**Visualizing a Clean Folder Structure:**
+Because we apply SRP and Clean Code, our folder structure ends up looking like this, where every file has a single, clear purpose:
+
+```text
+src/
+├── books/
+│   ├── data/
+│   │   └── books.mock.ts        # Pure data
+│   ├── dto/
+│   │   └── create-book.dto.ts   # Input validation rules
+│   ├── books.controller.ts      # HTTP routing (The Waiter)
+│   ├── books.service.ts         # Business logic (The Chef)
+│   ├── books.repository.ts      # Data access (The Pantry)
+│   └── books.module.ts          # Wires them together
+├── types/
+│   └── book.type.ts             # Shared domain model (DRY)
+└── app.module.ts
+```
 
 ---
 
