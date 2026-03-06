@@ -13,6 +13,9 @@
 
 ## Lecture Notes
 
+> [!TIP]
+> **Extra Lesson:** Today we also have a supplementary guide on [Documentation Types (Confluence, ADRs, etc.)](file:///Users/azfaturrahman/Projects/revou/introduction-to-nest/DOCUMENTATION_TYPES.md). Check it out to understand how professional engineering teams share knowledge!
+
 ### 📖 Importance of API Documentation
 
 API documentation is the instruction manual for your backend.
