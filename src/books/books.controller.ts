@@ -6,108 +6,36 @@ import {
   Delete,
   Param,
   Body,
-  Req,
-  Res,
 } from '@nestjs/common';
+import { BooksService } from './books.service';
 import { CreateBooksDto } from './dto/create-book.dto';
-
-type Book = {
-  id: string;
-  title: string;
-  author: string;
-  pages: number;
-  isAvailable: boolean;
-  publishedDate: Date;
-};
-
-const books: Book[] = [
-  {
-    id: '1',
-    title: 'The Great Gatsby',
-    author: 'F. Scott Fitzgerald',
-    pages: 180,
-    isAvailable: true,
-    publishedDate: new Date('1925-04-10'),
-  },
-  {
-    id: '2',
-    title: 'To Kill a Mockingbird',
-    author: 'Harper Lee',
-    pages: 281,
-    isAvailable: false,
-    publishedDate: new Date('1960-07-11'),
-  },
-  {
-    id: '3',
-    title: '1984',
-    author: 'George Orwell',
-    pages: 328,
-    isAvailable: true,
-    publishedDate: new Date('1949-06-08'),
-  },
-];
 
 @Controller('books')
 export class BooksController {
-  @Get()
-  findAll(@Req() request: Request, @Res() response: Response) {
-    console.log({ request });
-    console.log({ response });
+  constructor(private readonly booksService: BooksService) {}
 
-    return {
-      message: 'List of all books',
-      data: books,
-    };
+  @Get()
+  findAll() {
+    return this.booksService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    const book = books.find((b) => b.id === id);
-    if (!book) {
-      return {
-        message: 'Book not found',
-      };
-    }
-    return {
-      message: 'Book found',
-      data: book,
-    };
+    return this.booksService.findOne(id);
   }
 
   @Post()
-  create(@Body() CreateBooksDto: Book) {
-    books.push(CreateBooksDto);
-    return {
-      message: 'Book created',
-      data: CreateBooksDto,
-    };
+  create(@Body() createBooksDto: CreateBooksDto) {
+    return this.booksService.create(createBooksDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string) {
-    const bookIndex = books.findIndex((b) => b.id === id);
-    if (bookIndex === -1) {
-      return {
-        message: 'Book not found',
-      };
-    }
-    return {
-      message: 'Book updated',
-      data: books[bookIndex],
-    };
+  update(@Param('id') id: string, @Body() createBooksDto: CreateBooksDto) {
+    return this.booksService.update(id, createBooksDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    const bookIndex = books.findIndex((b) => b.id === id);
-    if (bookIndex === -1) {
-      return {
-        message: 'Book not found',
-      };
-    }
-    books.splice(bookIndex, 1);
-    return {
-      message: 'Book deleted',
-    };
+    return this.booksService.remove(id);
   }
 }
