@@ -27,13 +27,13 @@ In a professional engineering team, we use different "buckets" for different typ
 ```mermaid
 mindmap
   root((Engineering Docs))
-    Public Facing
+    (Public Facing)
       Swagger/Postman UI
       API Developer Portal
-    Internal Knowledge
+    (Internal Knowledge)
       Confluence / Wiki
       Technical Design Docs
-    Code Level
+    (Code Level)
       README.md
       ADRs (Decision Records)
       Code Comments
