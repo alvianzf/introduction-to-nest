@@ -6,16 +6,37 @@ import { ProductsModule } from './products/products.module';
 import { UsersModule } from './users/users.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { RequestTrackingMiddleware } from './common/middleware/request-tracking.middleware';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-  imports: [BooksModule, ProductsModule, UsersModule],
+  imports: [
+    BooksModule,
+    ProductsModule,
+    UsersModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Global Logging
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    // Global Logging & Tracking
+    consumer
+      .apply(LoggerMiddleware, RequestTrackingMiddleware)
+      .forRoutes('*');
 
     // Authentication for Users only
     consumer.apply(AuthMiddleware).forRoutes('users');
