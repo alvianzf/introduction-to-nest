@@ -11,7 +11,7 @@ import { BooksService } from './books.service';
 import { CreateBooksDto } from './dto/create-book.dto';
 import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags, ApiParam } from '@nestjs/swagger';
 import type { ApiResponse } from '../types/api-response.interface';
-import type { Book } from '../types/book.type';
+import { Book } from '../types/book.type';
 
 @ApiTags('books')
 @Controller('books')

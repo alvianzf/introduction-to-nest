@@ -12,7 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags } from '@nestjs/swagger';
 import type { ApiResponse } from '../types/api-response.interface';
-import type { SafeUserDto } from './dto/create-user.dto';
+import { SafeUserDto } from './dto/create-user.dto';
 
 @ApiTags('users')
 @Controller('users')
