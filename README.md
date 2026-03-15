@@ -246,15 +246,26 @@ ThrottlerModule.forRoot([{
 
 ---
 
-## 📖 Glossary of Terms for Juniors
+## 📖 Comprehensive Glossary & Syntax Guide
 
-| Term | Definition |
-| :--- | :--- |
-| **Middleware** | A function called before the route handler, acting as a filter or gate. |
-| **Gzip** | A compression method that makes data transfer faster across the web. |
-| **XSS** | Cross-Site Scripting, an attack where malicious scripts are injected into your app. |
-| **TTL** | Time-To-Live, the duration (in milliseconds) before a counter/session resets. |
-| **UUID** | Universally Unique Identifier, a 128-bit label used to identify information. |
+| Term / Syntax | Function | What is it? |
+| :--- | :--- | :--- |
+| **Middleware** | **Gatekeeper** | A function called before the route handler, acting as a filter or gate. |
+| **`@Injectable()`** | **DI Marker** | Tells Nest that this class can be managed by the Dependency Injection system. |
+| **`NestMiddleware`** | **Interface** | A blueprint that ensures your middleware class has the required `use()` method. |
+| **`use(req, res, next)`** | **Logic Engine** | The core method where your middleware's logic (logging, auth) lives. |
+| **`next()`** | **Pass Control** | A function that must be called to pass the request to the next middleware or handler. |
+| **`MiddlewareConsumer`** | **Orchestrator** | A helper object used in `AppModule` to map middlewares to specific routes. |
+| **`apply(...mw)`** | **Attachment** | Tells the consumer which middleware(s) you want to register. |
+| **`forRoutes('*')`** | **Scoping** | Defines which paths (or controllers) the middleware should watch. |
+| **`app.use()`** | **Global Plug** | Used in `main.ts` to register classic "Express-style" middlewares globally. |
+| **`ValidationPipe`** | **Cleaner** | Automatically checks incoming data against your DTOs and strips "dirty" fields. |
+| **`ThrottlerModule`** | **Traffic Control**| The module responsible for setting up rate limits across your application. |
+| **`async / await`** | **Async Logic** | Modern syntax for handling tasks that take time (like database calls) without blocking. |
+| **`UUID`** | **Fingerprint** | A universally unique ID used to track a specific request across thousands of logs. |
+| **`Gzip`** | **Shrinker** | A compression method that makes data transfer faster across the web. |
+| **`XSS`** | **Threat** | Cross-Site Scripting, an attack where malicious scripts are injected into your app. |
+| **`TTL`** | **Reset Timer** | Time-To-Live; the duration before a rate-limit counter resets. |
 
 ---
 
