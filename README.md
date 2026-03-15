@@ -49,17 +49,53 @@ export class LoggerMiddleware implements NestMiddleware {
 }
 ```
 
-To make it active, we registered it in `app.module.ts`. We told Nest to let this "Watcher" shadow every single request (`'*'`). If you run `pnpm run start:dev` and hit any route, you’ll see those logs appearing instantly in your terminal. It’s simple, but it’s our first layer of visibility.
+To make it active, we registered it in `app.module.ts`. We told Nest to let this "Watcher" shadow every single request (`'*'`) inside the `configure` method:
+```typescript
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
+```
+If you want to see it in action, just run `pnpm run start:dev` and hit any route (like `http://localhost:3000/api`). Peek at your terminal—you’ll see those `[LOG]` messages appearing instantly. It’s simple, but it’s our first layer of visibility.
 
 ### 2. Adding a Bouncer: API Key Authentication
 Logging is great, but transparency only goes so far. Sometimes you need a bouncer. We wanted to protect our `users` data, so we tucked an **Auth Middleware** into `src/common/middleware/auth.middleware.ts`. 
 
-It looks for an `x-api-key` header (we used `introduction-to-nestjs` as our secret password). If the key is missing or wrong? It throws an `UnauthorizedException` and stops the request right then and there. We only applied this to the `users` route in our module configuration because not every request needs a background check.
+The logic is straightforward: we look for an `x-api-key` header and compare it to our secret:
+```typescript
+const apiKey = req.headers['x-api-key'];
+if (!apiKey || apiKey !== 'introduction-to-nestjs') {
+  throw new UnauthorizedException('Invalid or missing API Key');
+}
+next();
+```
+
+We then "hired" this bouncer in `app.module.ts` specifically for the `users` routes:
+```typescript
+consumer.apply(AuthMiddleware).forRoutes('users'); 
+```
+
+You can test this by trying to GET `http://localhost:3000/users` in Postman. You'll get a `401 Unauthorized` until you add the `x-api-key` header with the value `introduction-to-nestjs`.
 
 ### 3. Tracking the Journey with UUIDs
-Now, imagine you have thousands of users. If one of them hits an error, how do you find *their* specific log in a sea of data? You give every request a unique fingerprint. 
+Now, imagine you have thousands of users. If one hits an error, how do you find *their* specific log in a sea of data? You give every request a unique fingerprint. 
 
-We brought in the industry-standard `uuid` library and built a **Request Tracking** tool. Every time a request hits us, we generate a unique ID, attach it to the request object for our internal use, and even send it back to the user in an `X-Request-ID` header. Now, if a user has an issue, they can give us that ID, and we can find exactly what happened.
+To do this, we first invited the `uuid` library to the project:
+```bash
+pnpm add uuid
+pnpm add -D @types/uuid
+```
+
+Then, in `src/common/middleware/request-tracking.middleware.ts`, we generate a unique ID for every visitor. We attach it to the request for ourselves, and set it in the response header `X-Request-ID` for the client:
+```typescript
+const requestId = uuidv4();
+req['requestId'] = requestId; 
+res.setHeader('X-Request-ID', requestId);
+next();
+```
+
+After registering it in `AppModule`, you can fire any request and check the **Response Headers** in your API client. You'll see that unique sequence—that's the request's permanent fingerprint.
 
 ---
 
@@ -68,18 +104,62 @@ We brought in the industry-standard `uuid` library and built a **Request Trackin
 While building our own tools is a great way to learn, there are some "heavy hitters" in the Node.js ecosystem that we'd be crazy not to use. They solve common problems so we don't have to.
 
 ### 🛡️ Your Shield: Helmet
-The web is full of scripts trying to find cracks in your armor. **Helmet** is like a suit of armor for your HTTP headers. By simply adding `app.use(helmet())` in `src/main.ts`, we automatically set specialized headers that protect us from clickjacking, XSS attacks, and more. It’s a "set it and forget it" security win.
+The web is full of scripts trying to find cracks in your armor. **Helmet** is like a suit of armor for your HTTP headers. Start by installing the package:
+```bash
+pnpm add helmet
+```
+
+Then, simply add it to your global middleware list in `src/main.ts`:
+```typescript
+import helmet from 'helmet';
+app.use(helmet());
+```
+It’s a "set it and forget it" security win. You can verify your shield is active by running `curl -I http://localhost:3000/api` and looking for security headers like `Strict-Transport-Security`.
 
 ### 📊 Your Dashboard: Morgan
-While our custom logger is fine for basics, **Morgan** is the professional choice. It gives us beautiful, color-coded summaries in our terminal. We set it up with the `dev` format, so every request now shows us the method, the status code, and exactly how many milliseconds it took to process. No more guessing if a route is slow!
+While our custom logger is fine for basics, **Morgan** is the professional choice for clean, color-coded summaries. First, get the library and its types:
+```bash
+pnpm add morgan
+pnpm add -D @types/morgan
+```
+
+We set it up in `src/main.ts` using the `dev` format:
+```typescript
+import morgan from 'morgan';
+app.use(morgan('dev')); 
+```
+Now, every request hit will show the method, status code, and processing time in your terminal. No more guessing why a route feels slow!
 
 ### ⚡ Your Speed Booster: Compression
-Big responses take time to travel. **Compression** uses the Gzip algorithm to shrink the data we send back to the user. After adding `app.use(compression())`, your JSON payloads are zipping through the internet much faster, especially for users on mobile or slow connections. You can even see it in action by checking the `Content-Encoding: gzip` header in your browser’s DevTools.
+Big responses take time to travel. **Compression** uses the Gzip algorithm to shrink the data we send back. Install it with:
+```bash
+pnpm add compression
+pnpm add -D @types/compression
+```
+
+Add it to the pipeline in `src/main.ts`:
+```typescript
+import compression from 'compression';
+app.use(compression());
+```
+Your JSON payloads are now zipping through the internet much faster. You can confirm this by checking the `Content-Encoding: gzip` header in your browser’s Network tab.
 
 ---
 
 ## ⏳ Keeping it Fair: Rate Limiting
-Finally, we had to think about "bad neighbors"—users or bots who might try to crash our server by sending thousands of requests a second. We integrated `@nestjs/throttler` in our `AppModule` to set a fair limit (10 requests per minute). It’s our way of making sure the server stays healthy for everyone.
+Finally, we had to think about "bad neighbors"—users or bots who might try to crash our server. We installed the official NestJS throttler:
+```bash
+pnpm add @nestjs/throttler
+```
+
+Then, we integrated it into our `AppModule` to set a fair limit:
+```typescript
+ThrottlerModule.forRoot([{
+  ttl: 60000, // 1 minute window
+  limit: 10,   // 10 requests max
+}]),
+```
+It’s our way of making sure the server stays healthy for everyone. Try hitting an endpoint 11 times in a minute, and you'll see our "Bouncer" (Throttler) step in!
 
 ---
 

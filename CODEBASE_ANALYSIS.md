@@ -22,7 +22,9 @@ graph LR
     linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 
-By encapsulating everything this way, we get **Encapsulation** for free. If the logic in the `Books` module needs a massive overhaul, you can work on it without ever worrying about accidentally breaking the `Users` system. It’s also incredibly portable—if you need this `Users` logic in another project, you can practically lift the whole folder and go. Peek into `src/users/users.module.ts` to see how we bundle our controllers, services, and repositories into one neat package.
+By encapsulating everything this way, we get **Encapsulation** for free. If the logic in the `Books` module needs a massive overhaul, you can work on it without ever worrying about accidentally breaking the `Users` system. It’s also incredibly portable—if you need this `Users` logic in another project, you can practically lift the whole folder and go. 
+
+**Observation Tip**: Peek into `src/users/users.module.ts`. You’ll see how we bundle our controllers, services, and repositories into one neat package using the `@Module` decorator.
 
 ---
 
@@ -41,6 +43,8 @@ mindmap
 
 Whether it’s a success story (200 OK) or an error (404 Not Found), every single response follows the same JSON structure defined in `src/types/api-response.interface.ts`. This makes the frontend’s job easy: they write one "Response Handler" and they’re done. No more hunting for data in `response.body` one day and `response.data` the next.
 
+**How to Verify**: Fire any GET request to `/products`. You'll notice the root object always has `status`, `message`, and `data` fields. Consistency is professional!
+
 ---
 
 ## 🛡️ Trust but Verify: DTOs & The Validation Pipeline
@@ -58,6 +62,8 @@ flowchart LR
 ```
 
 We’ve paired these DTOs with Nest’s `ValidationPipe` (which you can see activated in `src/main.ts`). This ensures that if someone tries to send us "dirty" data or extra fields we didn't ask for, the request is blocked before it can do any harm. It keeps our services clean and our database safe.
+
+**Try it yourself**: Try to POST a new user with an empty email. Our `ValidationPipe` will catch it instantly and return a clean 400 Bad Request error.
 
 ---
 
