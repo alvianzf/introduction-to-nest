@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Product } from '../types/product.type';
-import { productsMock } from './data/products.mock';
+import { productsMock } from '../data/products.mock';
 
 @Injectable()
 export class ProductRepository {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../types/user.type';
-import { usersMock } from './data/users.mock';
+import { usersMock } from '../data/users.mock';
 
 @Injectable()
 export class UserRepository {

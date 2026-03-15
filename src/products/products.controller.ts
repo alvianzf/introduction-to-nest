@@ -8,8 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from '../dto/create-product.dto';
-import { UpdateProductDto } from '../dto/update-product.dto';
+import { ProductRepository } from './products.repository';
+import { Product } from '../types/product.type';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('products')

@@ -254,12 +254,15 @@ Today we deep dive into how data flows safely into our system. We use **Pipes** 
 ├── 📄 SECURITY_BEST_PRACTICES.md <-- New Lesson: Security First
 ├── 📁 src
 │   ├── 📄 main.ts                <-- Global pipe configuration
+│   ├── 📁 data                   <-- Unified mock data
 │   ├── 📁 books                  <-- Book resource (Legacy)
-│   ├── 📁 products               <-- Product resource (New)
+│   ├── 📁 products               <-- Product resource
+│   │   ├── 📁 dto                <-- Product DTOs (Moved)
 │   │   ├── 📄 products.controller.ts
 │   │   ├── 📄 products.service.ts
 │   │   └── 📄 products.repository.ts
-│   ├── 📁 users                  <-- User resource (New)
+│   ├── 📁 users                  <-- User resource
+│   │   ├── 📁 dto                <-- User DTOs (Moved)
 │   │   └── ...
 │   └── 📁 types                  <-- Shared type definitions
 ```

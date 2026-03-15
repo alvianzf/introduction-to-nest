@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Book } from '../types/book.type';
-import { booksMock } from './data/books.mock';
+import { booksMock } from '../data/books.mock';
 
 @Injectable()
 export class BooksRepository {
