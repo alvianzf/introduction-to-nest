@@ -2,14 +2,16 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Delete,
   Param,
   Body,
+  Patch,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBooksDto } from './dto/create-book.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags, ApiParam } from '@nestjs/swagger';
+import type { ApiResponse } from '../types/api-response.interface';
+import type { Book } from '../types/book.type';
 
 @ApiTags('books')
 @Controller('books')
@@ -17,64 +19,56 @@ export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Retrieve all books' })
-  @ApiResponse({ status: 200, description: 'Return all available books.' })
-  findAll() {
+  @ApiOperation({ summary: 'Get all books' }) // Updated summary
+  @SwaggerResponse({ status: 200, description: 'Return all books.' }) // Updated decorator and description
+  findAll(): ApiResponse<Book[]> { // Updated return type
     return this.booksService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Retrieve a single book by ID' })
+  @ApiOperation({ summary: 'Get book by id' }) // Updated summary
   @ApiParam({
     name: 'id',
     description: 'The unique ID of the book',
     example: '1',
   })
-  @ApiResponse({ status: 200, description: 'Return the found book.' })
-  @ApiResponse({ status: 404, description: 'Book not found.' })
-  findOne(@Param('id') id: string) {
+  @SwaggerResponse({ status: 200, description: 'Return single book.' }) // Updated decorator and description
+  @SwaggerResponse({ status: 404, description: 'Book not found.' }) // Updated decorator
+  findOne(@Param('id') id: string): ApiResponse<Book> { // Updated return type
     return this.booksService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new book' })
-  @ApiResponse({
+  @ApiOperation({ summary: 'Create new book' }) // Updated summary
+  @SwaggerResponse({
     status: 201,
-    description: 'The book has been successfully created.',
+    description: 'Book created.', // Updated description
   })
-  create(@Body() createBooksDto: CreateBooksDto) {
+  create(@Body() createBooksDto: CreateBooksDto): ApiResponse<Book> { // Updated return type
     return this.booksService.create(createBooksDto);
   }
 
-  @Put(':id')
-  @ApiOperation({ summary: 'Update an existing book' })
-  @ApiParam({
-    name: 'id',
-    description: 'The unique ID of the book',
-    example: '1',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'The book has been successfully updated.',
-  })
-  @ApiResponse({ status: 404, description: 'Book not found.' })
-  update(@Param('id') id: string, @Body() createBooksDto: CreateBooksDto) {
-    return this.booksService.update(id, createBooksDto);
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update book' })
+  @SwaggerResponse({ status: 200, description: 'Book updated.' })
+  @SwaggerResponse({ status: 404, description: 'Book not found.' })
+  update(
+    @Param('id') id: string,
+    @Body() updateBooksDto: Partial<Book>,
+  ): ApiResponse<Book> {
+    return this.booksService.update(id, updateBooksDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a book entry' })
+  @ApiOperation({ summary: 'Delete book' })
   @ApiParam({
     name: 'id',
     description: 'The unique ID of the book',
     example: '1',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'The book has been successfully deleted.',
-  })
-  @ApiResponse({ status: 404, description: 'Book not found.' })
-  remove(@Param('id') id: string) {
+  @SwaggerResponse({ status: 200, description: 'Book deleted.' })
+  @SwaggerResponse({ status: 404, description: 'Book not found.' })
+  remove(@Param('id') id: string): ApiResponse<null> {
     return this.booksService.remove(id);
   }
 }

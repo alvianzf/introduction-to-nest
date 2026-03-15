@@ -36,8 +36,12 @@ Welcome to Day 5 of the NestJS Introduction! Today we focus on how to handle inc
 ## 🚀 Learning Goals
 - Learn how to define clear and secure data contracts using DTOs.
 - Master request validation using `class-validator` and `ValidationPipe`.
-- Understand the importance of data transformation in a backend application.
-- Explore NestJS mapped types to avoid code duplication in DTOs.
+- Automatically filter and transform data with **ValidationPipe**.
+- Simplify code using **Mapped Types**.
+- Standardize all API outputs with a modular **Response Interface**.
+- Handle errors gracefully using **Built-in NestJS Exceptions**.
+
+---
 
 ## 📜 Tutorial: Understanding DTO & Pipes
 
@@ -119,7 +123,7 @@ NestJS provides utility types to keep your DTOs DRY:
 #### PartialType
 Creates a type with all properties of the base class set to optional.
 ```typescript
-// Inherits name, price, description but makes them all optional
+// update-product.dto.ts
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 ```
 
@@ -137,6 +141,28 @@ Creates a type by picking all properties from an existing class and then removin
 export class SafeUserDto extends OmitType(CreateUserDto, ['password']) {}
 ```
 
+##### Interface vs Type
+
+In this project, we utilize both `interface` and `type` for different purposes:
+
+- **Interface**: Used for defining the structure of objects, especially those that are intended to be extended or implemented by classes. They are excellent for defining public APIs and can be "merged" if declared multiple times.
+  - *Example*: `ApiResponse<T>`, `Book`, `User`, `Product`.
+- **Type**: Used for defining type aliases, unions, intersections, and primitive types. Types are more flexible for complex type logic but cannot be reopened to add new properties.
+  - *Example*: `SafeUserDto` (in some cases), or union types like `HttpStatus = 200 | 201 | 400 | 404`.
+
+### Standard API Response Format
+
+All API responses follow a consistent structure to ensure predictability for frontend consumers:
+
+```typescript
+{
+  "status": 200,    // HTTP Status Code
+  "message": "...", // Human-readable message
+  "data": []        // The actual payload (generic T)
+}
+```
+
+This is enforced using the `ApiResponse<T>` interface found in `src/types/api-response.interface.ts`.
 #### IntersectionType
 Combines two types into one.
 ```typescript
