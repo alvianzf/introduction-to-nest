@@ -90,7 +90,7 @@ graph TD
     Interceptor_Pre --> Pipe[🧹 ValidationPipe: DTO Validation]
     Pipe --> Controller[🎮 Controller: Route Handling]
     Controller --> Service[⚙️ Service: Business Logic]
-    Service --> Repo[(🗄️ Repository/DB)]
+    Service --> Repo[(🗄️ Repository: Data Access)]
     Repo --> Service
     Service --> Controller
     Controller --> Interceptor_Post[⚡ Interceptor Post-logic]
@@ -108,7 +108,7 @@ graph TD
 3.  **Pipes (DTO Validation)**: This is where our `CreateUserDto` or `UpdateProductDto` are checked. If the data is "dirty", the request stops here.
 4.  **Controller**: The conductor. It receives the "clean" DTO and calls the appropriate Service.
 5.  **Service**: The "Brain". This is where we calculate prices, find users, and handle business rules.
-6.  **Repository (Planned)**: Where we talk to PostgreSQL.
+6.  **Repository**: The Data Access Layer. This provides a clean interface for finding and persisting data (currently using mock files, ready for PostgreSQL).
 7.  **Exception Filters**: If a Service throws a `NotFoundException` or if a Pipe fails validation, our `HttpExceptionFilter` catches it and makes sure the error looks like a professional `ApiResponse`.
 
 ---
