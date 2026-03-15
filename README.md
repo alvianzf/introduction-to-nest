@@ -39,6 +39,7 @@ Welcome to Day 5 of the NestJS Introduction! Today we focus on how to handle inc
 - Automatically filter and transform data with **ValidationPipe**.
 - Simplify code using **Mapped Types**.
 - Standardize all API outputs with a modular **Response Interface**.
+- Centralize error logic using a **Global Exception Filter**.
 - Handle errors gracefully using **Built-in NestJS Exceptions**.
 
 ---
@@ -163,6 +164,23 @@ All API responses follow a consistent structure to ensure predictability for fro
 ```
 
 This is enforced using the `ApiResponse<T>` interface found in `src/types/api-response.interface.ts`.
+
+### 7. Global Exception Filter
+To ensure errors also follow the standard format, we use an **Exception Filter**. This catches any `HttpException` (like 404, 400, 500) and transforms it into our standard response.
+
+```typescript
+// main.ts
+app.useGlobalFilters(new HttpExceptionFilter());
+```
+
+Example error response:
+```json
+{
+  "status": 404,
+  "message": "Book with ID 999 not found",
+  "data": null
+}
+```
 #### IntersectionType
 Combines two types into one.
 ```typescript
@@ -204,6 +222,7 @@ export class DetailedUserDto extends IntersectionType(CreateUserDto, AdditionalI
 | :--- | :--- | :--- |
 | **`ParseIntPipe`** | Pipe class | Converts a string parameter into an integer; throws error if not a number. |
 | **`ValidationPipe`** | Global Pipe | Orchestrates the validation process using `class-validator` on incoming DTOs. |
+| **`HttpExceptionFilter`** | Global Filter | Catches all exceptions and formats them into a unified `ApiResponse` JSON. |
 
 ---
 
