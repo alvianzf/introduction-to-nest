@@ -73,6 +73,37 @@ sequenceDiagram
 
 ---
 
+## 🔄 6. The Journey of a Request (NestJS Lifecycle)
+
+Understanding the order in which NestJS components execute is crucial for debugging and designing clean systems. Think of it as a series of specialized gates a request must pass through before it results in a response.
+
+```mermaid
+graph TD
+    Request([🌐 Incoming Request]) --> Middleware[⚙️ Middleware]
+    Middleware --> Guard[🔒 Guard]
+    Guard --> Interceptor_Pre[⚡ Interceptor Pre-logic]
+    Interceptor_Pre --> Pipe[🧹 Pipe]
+    Pipe --> Controller[🎮 Controller Handler]
+    Controller --> Interceptor_Post[⚡ Interceptor Post-logic]
+    Interceptor_Post --> Response([✅ Response Sent])
+    
+    %% Error Path
+    Pipe -. Error .-> Filter[🛑 Exception Filter]
+    Controller -. Error .-> Filter
+    Filter --> Response
+```
+
+### The Execution Order:
+1.  **Middlewares**: The first line of defense. Used for logging, auth checks (like our `AuthMiddleware`), and tracking.
+2.  **Guards**: Determine if the request is authorized to proceed further.
+3.  **Interceptors (Pre-handler)**: Can bind extra logic before the method is executed.
+4.  **Pipes**: Handle data transformation and validation (our `ValidationPipe`).
+5.  **Controller (Route Handler)**: This is where your business logic finally starts!
+6.  **Interceptors (Post-handler)**: Transform the data returned by your controller.
+7.  **Exception Filters**: The fallback gate. If anything fails in the steps above, these catch the error and format the response (our `HttpExceptionFilter`).
+
+---
+
 ## 🚀 Pro-Tips for Success
 - **Stay Typed**: Avoid `any` at all costs. It defeats the purpose of TypeScript. If you don't know the type, research it or create an interface!
 - **DRY (Don't Repeat Yourself)**: Use **Mapped Types** (`PartialType`, `OmitType`) to reuse your DTO definitions.
