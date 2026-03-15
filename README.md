@@ -59,16 +59,24 @@ We use decorators from the `class-validator` library to define validation rules 
 
 ```typescript
 // create-product.dto.ts
-import { IsString, IsNumber, MinLength, IsPositive } from 'class-validator';
+import { IsString, IsNumber, MinLength, IsPositive, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProductDto {
+  @ApiProperty({ example: 'Modern Laptop' })
   @IsString()
   @MinLength(3)
   name: string;
 
+  @ApiProperty({ example: 1200 })
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
 ```
 
@@ -92,6 +100,7 @@ Pipes can also transform data. For example, converting a string ID from a URL pa
 ```typescript
 @Get(':id')
 findOne(@Param('id', ParseIntPipe) id: number) {
+  // id is automatically converted from string to number
   return this.service.findOne(id);
 }
 ```
@@ -103,22 +112,74 @@ findOne(@Param('id', ParseIntPipe) id: number) {
 | **Validation** | Format, Length, Presence        | Constraints, Relations, Indexes |
 | **Security**   | Hides sensitive internal fields | Contains all database columns   |
 
-### 6. Reusing DTOs with Mapped Types
-NestJS provides utility types to help us keep our DTOs DRY:
-- **`PartialType`**: Makes all fields optional (perfect for `PATCH`).
-- **`PickType`**: Selects only specific fields.
-- **`OmitType`**: Removes specific fields (e.g., hiding `password`).
+### 6. Reusing DTOs with Mapped Types (Detailed Examples)
 
+NestJS provides utility types to keep your DTOs DRY:
+
+#### PartialType
+Creates a type with all properties of the base class set to optional.
 ```typescript
-// update-product.dto.ts
+// Inherits name, price, description but makes them all optional
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
 ```
 
-## 📖 Concept Glossary
-- **DTO**: Data Transfer Object, used to define API contracts.
-- **Pipe**: A class that can transform or validate data as it passes to an endpoint.
-- **Whitelist**: A feature that strips any property from the request body that isn't explicitly defined in the DTO.
-- **Mapped Types**: Utility classes used to transform existing DTOs into new ones.
+#### PickType
+Creates a type by picking a set of properties from an existing class.
+```typescript
+// Only includes the 'name' property
+export class UpdateProductNameDto extends PickType(CreateProductDto, ['name']) {}
+```
+
+#### OmitType
+Creates a type by picking all properties from an existing class and then removing a particular set of keys.
+```typescript
+// Includes everything EXCEPT 'password'
+export class SafeUserDto extends OmitType(CreateUserDto, ['password']) {}
+```
+
+#### IntersectionType
+Combines two types into one.
+```typescript
+// Combines basic info with additional metadata
+export class DetailedUserDto extends IntersectionType(CreateUserDto, AdditionalInfoDTO) {}
+```
+
+---
+
+## 🛠 Syntax & Function Reference
+
+### Validation Decorators (`class-validator`)
+| Syntax | What is it? | Function |
+| :--- | :--- | :--- |
+| **`@IsString()`** | Decorator | Ensures the value is a valid string. |
+| **`@IsNumber()`** | Decorator | Ensures the value is a number (integer or float). |
+| **`@MinLength(n)`** | Decorator | Ensures string length is at least **n** characters. |
+| **`@IsPositive()`** | Decorator | Ensures the number is greater than zero. |
+| **`@IsOptional()`** | Decorator | Skips validation if the property is missing or null. |
+| **`@IsEmail()`** | Decorator | Ensures the string is a valid email format. |
+
+### Global Configuration (`main.ts`)
+| Syntax | What is it? | Function |
+| :--- | :--- | :--- |
+| **`whitelist: true`** | Pipe Option | Automatically removes any property NOT defined in the DTO class. |
+| **`forbidNonWhitelisted`** | Pipe Option | Throws an error (400 Bad Request) if unknown properties are detected. |
+| **`transform: true`** | Pipe Option | Converts the plain JavaScript object into an instance of the DTO class. |
+
+### NestJS Mapped Types
+| Syntax | What is it? | Function |
+| :--- | :--- | :--- |
+| **`PartialType(T)`** | Utility Class | Returns a class with all properties from **T** marked as optional. |
+| **`PickType(T, [K])`** | Utility Class | Returns a class with only the specified keys **K** from **T**. |
+| **`OmitType(T, [K])`** | Utility Class | Returns a class with all properties from **T** except the keys **K**. |
+| **`IntersectionType(A, B)`**| Utility Class | Returns a class that merges all properties from both **A** and **B**. |
+
+### Built-in Pipes
+| Syntax | What is it? | Function |
+| :--- | :--- | :--- |
+| **`ParseIntPipe`** | Pipe class | Converts a string parameter into an integer; throws error if not a number. |
+| **`ValidationPipe`** | Global Pipe | Orchestrates the validation process using `class-validator` on incoming DTOs. |
+
+---
 
 ## ✍️ Author
 **Alvian Zachry Faturrahman**
