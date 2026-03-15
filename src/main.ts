@@ -1,18 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import {
-  SwaggerModule,
-  DocumentBuilder,
-  ApiOperation,
-  ApiResponse as SwaggerResponse,
-  ApiTags,
-  ApiSecurity,
-} from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import * as morgan from 'morgan';
+import helmet from 'helmet';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Security & Performance Middlewares
+  app.use(helmet());
+  app.use(compression());
+  app.use(morgan('dev'));
 
   // Use Global Filters for consistent error responses
   app.useGlobalFilters(new HttpExceptionFilter());
