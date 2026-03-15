@@ -18,7 +18,7 @@ graph LR
 
     BooksModule --> BooksController["🎮 BooksController"]
     BooksModule --> BooksService["⚙️ BooksService"]
-    BooksService --> BooksRepository["🗄️ BooksRepository"]
+    BooksModule --> BooksRepository["🗄️ BooksRepository"]
 
     linkStyle default stroke:#ffffff,stroke-width:2px
 ```
