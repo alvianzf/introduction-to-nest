@@ -30,6 +30,45 @@ flowchart TD
     ApiResponse --> Client
 ```
 
+## 🔄 Exception Filters vs. Middleware
+
+While both intercept requests and responses, they serve different purposes and sit at different locations in the **Request-Response Pipeline**.
+
+### 1. The Key Differences
+
+| Feature | Middleware | Exception Filter |
+| :--- | :--- | :--- |
+| **Execution** | Runs **BEFORE** the route handler (Controller). | Runs **AFTER** a handler throws an exception. |
+| **Scope** | Generic (Logging, Auth, Body Parsing). | Error-specific (Catching, Formatting). |
+| **Awareness** | Knows about the raw Request/Response. | Knows about the **Exception** and the Execution Context. |
+| **Replacement** | Can handle pre-processing tasks. | **CANNOT** be easily replaced by middleware for error handling. |
+
+### 2. Can they be replaced?
+
+**Technically Yes, Practically No.**
+You *could* wrap your entire app in a middleware with a `try/catch` block, but this is an anti-pattern in NestJS because:
+1.  **Lost Context**: Middleware doesn't have access to NestJS-specific metadata (like which controller or method was called).
+2.  **Boilerplate**: You would have to manually handle every type of exception.
+3.  **NestJS Ecosystem**: Many built-in features (like `ValidationPipe`) rely on the built-in exception layer to work correctly.
+
+### 3. The Pipeline Diagram
+
+```mermaid
+flowchart LR
+    Client["🌐 Client"]
+    MW["⚙️ Middleware"]
+    Guard["🛡️ Guard"]
+    Pipe["🧪 Pipe"]
+    Controller["🎮 Controller"]
+    Filter["🩹 Filter (ErrorHandler)"]
+    Response["📤 Response"]
+
+    Client --> MW --> Guard --> Pipe --> Controller
+    Controller -- "Success" --> Response
+    Controller -- "Exception" --> Filter
+    Filter --> Response
+```
+
 ## 🏗️ Inside the `HttpExceptionFilter`
 
 The `HttpExceptionFilter` is a class that implements the `ExceptionFilter` interface. It has one job: catch an exception and send a clean JSON response.
