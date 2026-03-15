@@ -22,7 +22,25 @@ graph TD
 
 ---
 
-## 📜 The Middleware Journey: Building Our Own Gates
+## 🧐 What are Middlewares?
+
+Before we dive into the code, let's talk about the *why*. A **Middleware** is essentially a function that sits between the client's request and your final route handler. In NestJS, they have full access to the `Request` and `Response` objects, and a special `next()` function that passes control to the next part of the system.
+
+Think of it like an airport security check:
+1. **Request**: You arrive at the airport (the server).
+2. **Middleware**: You go through security (authentication), check your bags (logging), and get your ticket scanned (tracking).
+3. **Route Handler**: You finally get on the plane (the controller logic).
+
+### The Three Levels of Scope
+Not every middleware needs to watch every request. In NestJS, we can control the "zoom level" or **Scope**:
+
+- **🌍 Global Middlewares**: These watch every single request hitting your app. We usually register these in `main.ts` or `AppModule`.
+- **📦 Module Middlewares**: These only guard routes within a specific module (e.g., only protecting the `UsersModule`).
+- **🛣️ Route Middlewares**: The most granular level, targeting specific paths (e.g., just `GET /users/profile`).
+
+---
+
+## 📜 The Middleware Journey: Custom Implementations
 
 When we build custom middlewares, we are essentially teaching our application how to "think" about incoming data before it reaches its destination. Let's walk through the custom gates we developed today.
 
