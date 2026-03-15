@@ -2,9 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description?: string;
+}
+
 @Injectable()
 export class ProductsService {
-  private products = [];
+  private products: Product[] = [];
 
   create(createProductDto: CreateProductDto) {
     const newProduct = {
