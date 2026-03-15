@@ -67,7 +67,26 @@ if (!apiKey || apiKey !== 'introduction-to-nestjs') {
 consumer.apply(AuthMiddleware).forRoutes('users');
 ```
 
+### 3. Production-Ready Middleware
+We've integrated industry-standard tools to make our app secure and performant.
+
+| Library | Purpose | How to test locally |
+| :--- | :--- | :--- |
+| **Helmet** | Sets security headers. | Use `curl -I http://localhost:3000/api` and look for `X-Content-Type-Options`. |
+| **Compression** | Gzip compression for responses. | Use `curl -H "Accept-Encoding: gzip" -I http://localhost:3000/api` and look for `Content-Encoding: gzip`. |
+| **Morgan** | HTTP request logging. | Check your terminal/console for logs like `GET /api 200 ...`. |
+
+### 4. Advanced: Request Tracking
+We implemented a custom middleware to trace requests throughout the system. It generates a unique UUID for every request and attaches it to the `X-Request-ID` response header.
+
+### 5. Rate Limiting (Throttler)
+To prevent brute-force attacks and abuse, we integrated `@nestjs/throttler`.
+- **Limit**: 10 requests / 1 minute (per IP).
+
 ---
+
+## 💡 Key Takeaways & Extra Lessons
+- [Junior Engineer Guide: Codebase Analysis](./JUNIOR_ENGINEER_GUIDE.md)
 
 ---
 
