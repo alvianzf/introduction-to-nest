@@ -14,12 +14,13 @@ graph LR
     AppModule --> ProductsModule["🛒 ProductsModule"]
     AppModule --> UsersModule["👤 UsersModule"]
     
-    BooksModule --> BooksService["⚙️ BooksService"]
     BooksModule --> BooksController["🎮 BooksController"]
+    BooksController --> BooksService["⚙️ BooksService"]
+    BooksService --> BooksRepository["🗄️ BooksRepository"]
 
     linkStyle default stroke:#ffffff,stroke-width:2px
 ```
-- **Benefit**: Encapsulation. Changes in `Products` won't accidentally break `Users`.
+- **Benefit**: Encapsulation. Each module is a self-contained "mini-app" with its own Controller, Service, and Repository.
 - **Look for**: `src/users/users.module.ts`.
 
 ---
@@ -57,9 +58,10 @@ flowchart LR
 
 ---
 
-## 🧱 4. Separation of Concerns (Service vs Controller)
+## 🧱 4. Separation of Concerns (Three-Tier Architecture)
 - **Controller**: Only handles the HTTP layer (routing, status codes, Swagger docs).
-- **Service**: Handles the "Business Logic" (calculating prices, searching users).
+- **Service**: Handles the "Business Logic" (calculating prices, searching users, data manipulation).
+- **Repository**: Handles the Data Access Layer (talking to mock data or real databases).
 
 ---
 
