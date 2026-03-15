@@ -87,6 +87,57 @@ This setup makes **Testability** a breeze. You can test your "Brain" (Service) w
 
 ---
 
+## 🗄️ The Repository Pattern: Your Data’s Sanctuary
+
+As we discussed in the Three-Tier section, we don’t let our Services touch the raw data directly. Instead, we use the **Repository Pattern**. Think of the Repository as a "Librarian." If the Service (The Executive) needs a book (Data), it doesn't wander into the stacks itself; it asks the Librarian to find it.
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e0f2f1', 'edgeColor': '#ffffff', 'tertiaryColor': '#f1f8e9', 'lineColor': '#ffffff', 'actorLineColor': '#ffffff', 'signalColor': '#ffffff'}}}%%
+sequenceDiagram
+    participant S as ⚙️ Service (Logic)
+    participant R as 🗄️ Repository (Data Access)
+    participant D as 💾 Data Source (Mock/DB)
+    
+    S->>R: findOne(id)
+    Note over R: Logic-free data fetching
+    R->>D: Access raw storage
+    D-->>R: Return raw object
+    R-->>S: Return typed Entity
+```
+
+### Why do we bother with this extra layer?
+
+At first glance, it might seem like more work, but the benefits are huge:
+
+- **Decoupling**: Our Business Logic (Service) doesn't know—and doesn't care—if our data is in a JSON file, a PostgreSQL database, or an external API. It just knows it can call `repo.findAll()`.
+- **Swapability**: Want to move from our current "Mock Data" files to a real database? You *only* have to change the code inside the Repository. Your Services and Controllers won't even notice the difference!
+- **Cleanliness**: Repositories are "logic-free zones." They only handle CRUD (Create, Read, Update, Delete) operations, keeping your Services focused on the actual "Brain" work.
+
+### Seeing it in Code:
+
+Take a look at how clean our `ProductRepository` is. It handles the raw array manipulation so the Service stays pure:
+
+```typescript
+@Injectable()
+export class ProductRepository {
+  private products: Product[] = productsMock;
+
+  findOne(id: string): Product | undefined {
+    // Just find the data and return it. No logic, no filters, just fetching.
+    return this.products.find((p) => p.id === id);
+  }
+
+  create(product: Product): Product {
+    this.products.push(product);
+    return product;
+  }
+}
+```
+
+**Observation Tip**: You can find all our "Librarians" inside their respective feature folders, like `src/products/products.repository.ts`. Notice how they focus entirely on data interactions.
+
+---
+
 ## 🔄 The Request’s Journey: A Project Lifecycle
 
 To really understand this codebase, you need to see the roadmap of how a single request travels from the moment it hits our server until we send a response back.
