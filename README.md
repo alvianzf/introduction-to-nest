@@ -10,6 +10,8 @@ Welcome to Day 5 of the NestJS Introduction! Today we focus on how to handle inc
 - DTO vs Entity: separating API contracts from database models
 - Reusing DTOs with mapped types (`PartialType`, `PickType`, `IntersectionType`)
 - Best practices for building scalable DTO structures
+- [Additional Lesson: Security Best Practices](./SECURITY_BEST_PRACTICES.md)
+- [Additional Lesson: Master Global Error Handling](./EXCEPTION_FILTER_GUIDE.md)
 - Recap
 
 ## 🏗 Project Structure
