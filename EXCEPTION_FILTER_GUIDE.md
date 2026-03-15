@@ -2,6 +2,16 @@
 
 In a production application, delivering consistent error messages is just as important as delivering consistent data. NestJS **Exception Filters** allow you to catch errors across your entire application and format them into a unified structure.
 
+## ❓ Why use Global Exception Filters?
+
+Without a global filter, NestJS returns errors in its default format, which might not match your custom `ApiResponse` structure. This creates friction for frontend developers who have to write different logic for success and error cases.
+
+**Benefits:**
+- **Consistency**: Every response (200 or 404) has the same top-level keys (`status`, `message`, `data`).
+- **Clean Controllers**: You don't need `try/catch` blocks in every controller. Just throw the error, and the filter handles the rest.
+- **Security**: You can catch unexpected 500 errors and hide sensitive stack traces from the user.
+- **Improved UX**: Transform complex validation arrays into user-friendly strings.
+
 ## 🛠️ The Exception Lifecycle
 
 When a service throws an error, it doesn't just crash. It travels through the NestJS lifecycle until it's caught by a filter.

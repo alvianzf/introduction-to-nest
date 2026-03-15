@@ -29,7 +29,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const errorResponse = exception.getResponse();
-      message = (errorResponse as HttpExceptionResponse).message || exception.message;
+      message =
+        (errorResponse as HttpExceptionResponse).message || exception.message;
     }
 
     const apiResponse: ApiResponse<null> = {
