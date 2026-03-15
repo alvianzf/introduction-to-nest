@@ -1,8 +1,9 @@
-# Day 5: Understanding DTO & Pipes in NestJS
+# Module 6, Second Week Day 1: Understanding DTO & Pipes in NestJS
 
 Welcome to Day 5 of the NestJS Introduction! Today we focus on how to handle incoming data safely and efficiently using Data Transfer Objects (DTOs), Pipes, and Mapped Types.
 
 ## 📋 Table of Contents
+
 1. [Understanding Data Transfer Objects (DTOs)](#1-understanding-data-transfer-objects-dtos)
 2. [Validating Request Data with class-validator](#2-validating-request-data-with-class-validator)
 3. [Enforcing Validation using ValidationPipe](#3-enforcing-validation-using-validationpipe)
@@ -46,7 +47,7 @@ graph LR
     Client["📱 Client (JSON)"]
     DTO["📄 DTO (Class)"]
     Controller["🎮 Controller"]
-    
+
     Client -- "POST /products" --> DTO
     DTO --> Controller
 ```
@@ -76,11 +77,13 @@ To make the decorators work, we must tell NestJS to use the `ValidationPipe` glo
 
 ```typescript
 // main.ts
-app.useGlobalPipes(new ValidationPipe({
-  whitelist: true,               // Strips properties not in the DTO
-  forbidNonWhitelisted: true,    // Throws error if extra properties are sent
-  transform: true,               // Auto-transforms payloads to DTO instances
-}));
+app.useGlobalPipes(
+  new ValidationPipe({
+    whitelist: true, // Strips properties not in the DTO
+    forbidNonWhitelisted: true, // Throws error if extra properties are sent
+    transform: true, // Auto-transforms payloads to DTO instances
+  }),
+);
 ```
 
 ## 4. Transforming Incoming Data with Built-in Pipes
@@ -96,11 +99,11 @@ findOne(@Param('id', ParseIntPipe) id: number) {
 
 ## 5. DTO vs Entity: Separating API Contracts from Database Models
 
-| Feature | DTO (Data Transfer Object) | Entity (Database Model) |
-| --- | --- | --- |
-| **Purpose** | API Input/Output Contract | Database Schema Mapping |
-| **Validation** | Format, Length, Presence | Constraints, Relations, Indexes |
-| **Security** | Hides sensitive internal fields | Contains all database columns |
+| Feature        | DTO (Data Transfer Object)      | Entity (Database Model)         |
+| -------------- | ------------------------------- | ------------------------------- |
+| **Purpose**    | API Input/Output Contract       | Database Schema Mapping         |
+| **Validation** | Format, Length, Presence        | Constraints, Relations, Indexes |
+| **Security**   | Hides sensitive internal fields | Contains all database columns   |
 
 ## 6. Reusing DTOs with Mapped Types
 
@@ -126,6 +129,7 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {}
 ## 8. Recap
 
 Today we learned how to:
+
 - Define strict data contracts using **DTO classes**.
 - Protect our endpoints using **class-validator**.
 - Automatically filter and transform data with **ValidationPipe**.
@@ -134,5 +138,6 @@ Today we learned how to:
 ---
 
 **Author: Alvian Zachry Faturrahman**
+
 - Web: [alvianzf.id](https://alvianzf.id)
 - LinkedIn: [alvianzf](https://linkedin.com/in/alvianzf)
