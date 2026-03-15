@@ -61,11 +61,11 @@ Not every middleware needs to watch every request. In NestJS, we can control the
 When we build custom middlewares, we are essentially teaching our application how to "think" about incoming data before it reaches its destination. Let's walk through the custom gates we developed today.
 
 ### 1. The Watcher: Custom Logger
-**What is it?**
+**What’s the story?**
 A logger is your application's diary. It records every interaction, helping you see what's happening under the hood in real-time. Without it, you're flying blind!
 
-**How to Implement?**
-We built this inside `src/common/middleware/logger.middleware.ts`. Here is how we define a class-based logger that leverages Nest's `Injectable` pattern:
+**Building the gate**
+We built this inside `src/common/middleware/logger.middleware.ts`. We used a class-based approach so we can eventually use Nest's powerful Dependency Injection:
 
 ```typescript
 @Injectable()
@@ -77,8 +77,8 @@ export class LoggerMiddleware implements NestMiddleware {
 }
 ```
 
-**How to Register?**
-We don't want to manually add this to every controller. Instead, we register it in `app.module.ts`:
+**Opening the doors**
+To make it active, we register it in `app.module.ts`. This is where we tell Nest exactly which routes the "Watcher" should monitor:
 ```typescript
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -87,19 +87,19 @@ export class AppModule implements NestModule {
 }
 ```
 
-**How to Test Locally?**
-1. Run your app: `pnpm run start:dev`.
-2. Make any request (e.g., open `http://localhost:3000/api` in your browser).
-3. Check your terminal—you should see the `[LOG]` prefix with the request details!
+**Seeing the results**
+1. Kick off the app: `pnpm run start:dev`.
+2. Hit any endpoint (like `http://localhost:3000/api`).
+3. Peek at your terminal—you'll see your custom `[LOG]` messages appearing instantly!
 
 ---
 
 ### 2. The Bouncer: API Key Authentication
-**What is it?**
+**What’s the story?**
 Think of this as a security guard at the VIP entrance. It checks if the "secret password" (API Key) is present in the request headers before letting anyone see our sensitive user data.
 
-**How to Implement?**
-Found in `src/common/middleware/auth.middleware.ts`, it inspects the `x-api-key` header:
+**Building the gate**
+Located in `src/common/middleware/auth.middleware.ts`, it inspects the incoming `x-api-key`:
 ```typescript
 const apiKey = req.headers['x-api-key'];
 if (!apiKey || apiKey !== 'introduction-to-nestjs') {
@@ -108,42 +108,42 @@ if (!apiKey || apiKey !== 'introduction-to-nestjs') {
 next();
 ```
 
-**How to Register?**
-We only want this protection for our `users` resource. In `app.module.ts`:
+**Opening the doors**
+We don't need this bouncer for everything—just for our `users` resource. We configure that scope in `app.module.ts`:
 ```typescript
 consumer.apply(AuthMiddleware).forRoutes('users'); 
 ```
 
-**How to Test Locally?**
-1. Try to GET `http://localhost:3000/users` in Postman/Thunder Client.
-2. It should fail with `401 Unauthorized`.
-3. Add a header `x-api-key` with the value `introduction-to-nestjs` and try again. Success!
+**Seeing the results**
+1. Try to fetch `http://localhost:3000/users` in Postman.
+2. You'll be blocked with a `401 Unauthorized`.
+3. Add the `x-api-key` header with `introduction-to-nestjs` and try again. The bouncer will let you through!
 
 ---
 
 ### 3. The Tracker: Request UUIDs
-**What is it?**
+**What’s the story?**
 Imagine you have 1,000 users. If one hits an error, how do you find *their* specific logs? We use **Request Tracking** to give every single request a unique "fingerprint" called a UUID.
 
-**How to Install?**
-We need a library to generate unique IDs:
+**Building the gate**
+First, we приглашаем (invite) the specialized `uuid` tool:
 ```bash
 pnpm add uuid
 pnpm add -D @types/uuid
 ```
 
-**How to Implement?**
-In `src/common/middleware/request-tracking.middleware.ts`:
+Then, we implement the tracker in `src/common/middleware/request-tracking.middleware.ts`:
 ```typescript
 const requestId = uuidv4();
-req['requestId'] = requestId; // Store it for internal use
-res.setHeader('X-Request-ID', requestId); // Send it back to the client
+req['requestId'] = requestId; // Keep it for our records
+res.setHeader('X-Request-ID', requestId); // Hand it to the client
 next();
 ```
 
-**How to Test Locally?**
-1. Make a request to any endpoint.
-2. In the **Response Headers** section of your API client, look for `X-Request-ID`. You'll see a long, unique sequence like `550e8400-e29b-41d4-a716-446655440000`.
+**Seeing the results**
+1. Fire any request to the API.
+2. Look at the **Response Headers** in Postman.
+3. You'll see `X-Request-ID` with a unique ID string—that's the request's permanent fingerprint!
 
 ---
 
@@ -161,68 +161,68 @@ mindmap
 ```
 
 ### 🛡️ Helmet: Your Application's Shield
-**What is it?**
+**What’s the story?**
 The web is full of malicious scripts trying to steal data. **Helmet** automatically sets security-related HTTP headers (like CSP and HSTS) to shield your app from common vulnerabilities like XSS and clickjacking.
 
-**How to Install?**
+**Inviting the professional**
 ```bash
 pnpm add helmet
 ```
 
-**How to Implement?**
-We register this globally in `src/main.ts`:
+**Putting it to work**
+We register this globally in `src/main.ts` so every response is protected:
 ```typescript
 import helmet from 'helmet';
 app.use(helmet());
 ```
 
-**How to Test Locally?**
+**Seeing the results**
 1. Run your app and use `curl -I http://localhost:3000/api`.
 2. Look for headers like `Strict-Transport-Security` and `X-Content-Type-Options`. If they are there, your shield is active!
 
 ---
 
 ### 📊 Morgan: The Professional Dashboard
-**What is it?**
-While our custom logger is great for learning, **Morgan** is the "Go-To" logger for Node.js. It provides beautifully formatted, color-coded logs that tell you exactly how long a request took and its final status.
+**What’s the story?**
+While our custom logger is great for learning, **Morgan** is the real "Go-To" for Node.js. It provides beautifully formatted, color-coded logs that tell you exactly how long a request took and its final status.
 
-**How to Install?**
+**Inviting the professional**
 ```bash
 pnpm add morgan
 pnpm add -D @types/morgan
 ```
 
-**How to Implement?**
-In `src/main.ts`:
+**Putting it to work**
+We also add this in `src/main.ts` using the 'dev' format for clean output:
 ```typescript
 import morgan from 'morgan';
-app.use(morgan('dev')); // Use the 'dev' format for clean, colored output
+app.use(morgan('dev')); 
 ```
 
-**How to Test Locally?**
+**Seeing the results**
 Observe your terminal when making requests. You'll see professional logs like:
 `GET /api 200 12.345 ms - 456`
 
 ---
 
 ### ⚡ Compression: The Speed Booster
-**What is it?**
+**What’s the story?**
 Big data takes a long time to travel across the internet. **Compression** uses an algorithm called Gzip to shrink your JSON responses before sending them, making your app feel incredibly fast for users on slow connections.
 
-**How to Install?**
+**Inviting the professional**
 ```bash
 pnpm add compression
 pnpm add -D @types/compression
 ```
 
-**How to Implement?**
-In `src/main.ts`:
+**Putting it to work**
+Added in `src/main.ts` to shrink every single outgoing response:
 ```typescript
 import compression from 'compression';
 app.use(compression());
 ```
 
-**How to Test Locally?**
+**Seeing the results**
 1. Open your browser's Developer Tools (Network tab).
 2. Refresh your app and click on the request.
 3. Look for the `Content-Encoding: gzip` header. That means the data was shrunk before arrival!
@@ -230,15 +230,16 @@ app.use(compression());
 ---
 
 ## ⏳ Keeping it Fair: Rate Limiting
-**What is it?**
+**What’s the story?**
 To prevent bots or malicious users from crashing our server with too many requests, we use `@nestjs/throttler`.
 
-**How to Install?**
+**Inviting the professional**
 ```bash
 pnpm add @nestjs/throttler
 ```
 
-**How to Implement (`app.module.ts`):**
+**Putting it to work**
+Configured in `app.module.ts`:
 ```typescript
 ThrottlerModule.forRoot([{
   ttl: 60000, // Time window (1 minute)
