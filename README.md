@@ -9,7 +9,7 @@ Welcome to Day 6! Up until now, we've been focused on the "meat" of our applicat
 The following diagram shows how a request flows through our application's middleware layer before reaching the Controller:
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'edgeColor': '#01579b', 'tertiaryColor': '#fff9c4'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'edgeColor': '#ffffff', 'tertiaryColor': '#fff9c4', 'lineColor': '#ffffff'}}}%%
 graph TD
     Client[🌐 Client Request] --> Helmet[🛡️ Helmet Security]
     Helmet --> Morgan[📊 Morgan Logger]
@@ -150,7 +150,7 @@ next();
 In the real world, we don't just build our own tools. we use industry-standard libraries that have been battle-tested by millions of developers. 
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fce4ec', 'edgeColor': '#880e4f', 'tertiaryColor': '#f3e5f5'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fce4ec', 'edgeColor': '#ffffff', 'tertiaryColor': '#f3e5f5', 'lineColor': '#ffffff'}}}%%
 mindmap
     root((Standard Middlewares))
         Helmet(Security Headers)
