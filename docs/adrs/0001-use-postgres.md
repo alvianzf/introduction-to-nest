@@ -17,6 +17,8 @@ We will use **PostgreSQL** as our primary relational database. We will also use 
 graph LR
     App[🚀 NestJS App] --> ORM[🛠️ Prisma/TypeORM]
     ORM --> DB[(🐘 PostgreSQL)]
+
+    linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 
 ## 3. Options Considered

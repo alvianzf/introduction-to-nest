@@ -16,6 +16,8 @@ graph LR
     
     BooksModule --> BooksService["⚙️ BooksService"]
     BooksModule --> BooksController["🎮 BooksController"]
+
+    linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 - **Benefit**: Encapsulation. Changes in `Products` won't accidentally break `Users`.
 - **Look for**: `src/users/users.module.ts`.
@@ -47,6 +49,8 @@ flowchart LR
     Client[🌐 Client Data] --> DTO[🧱 DTO Validation]
     DTO --> Filter[🧹 ValidationPipe]
     Filter --> Service[⚙️ Business Logic]
+
+    linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 - **Tools**: `class-validator` and `ValidationPipe`.
 - **Benefit**: Blocks malicious or malformed data before it even hits our database logic.
@@ -63,7 +67,7 @@ flowchart LR
 We use a chain of decorators and middlewares to keep our controllers clean. In NestJS, middlewares run **before** your route handlers, allowing you to intercept requests and response objects.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'edgeColor': '#ffffff', 'tertiaryColor': '#fff9c4', 'lineColor': '#ffffff'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'edgeColor': '#ffffff', 'tertiaryColor': '#fff9c4', 'lineColor': '#ffffff', 'actorLineColor': '#ffffff', 'signalColor': '#ffffff'}}}%%
 sequenceDiagram
     participant C as Client
     participant M as Middleware Layer
@@ -100,6 +104,8 @@ graph TD
     Pipe -. Invalid DTO .-> Filter[🛑 Exception Filter]
     Service -. Logic Error .-> Filter
     Filter --> Response
+
+    linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 
 ### The Execution Order in Our App:

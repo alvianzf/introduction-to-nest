@@ -19,6 +19,8 @@ graph TD
     TrackingMW --> AuthMW[🛂 Auth Middleware - Users Only]
     AuthMW --> RateLimit[⏳ Rate Limiter]
     RateLimit --> Controller[🎮 Controller]
+
+    linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 
 ---
