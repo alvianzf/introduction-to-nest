@@ -73,34 +73,38 @@ sequenceDiagram
 
 ---
 
-## 🔄 6. The Journey of a Request (NestJS Lifecycle)
+## 🔄 6. The Journey of a Request (Our Codebase Lifecycle)
 
-Understanding the order in which NestJS components execute is crucial for debugging and designing clean systems. Think of it as a series of specialized gates a request must pass through before it results in a response.
+Understanding how a request travels through **this specific project** is key. We use a combination of standard NestJS gates and our own custom logic.
 
 ```mermaid
 graph TD
-    Request([🌐 Incoming Request]) --> Middleware[⚙️ Middleware]
-    Middleware --> Guard[🔒 Guard]
+    Request([🌐 Incoming Request]) --> Middleware[⚙️ Middleware: Logger/Auth/Tracking]
+    Middleware --> Guard[🔒 Throttler Guard]
     Guard --> Interceptor_Pre[⚡ Interceptor Pre-logic]
-    Interceptor_Pre --> Pipe[🧹 Pipe]
-    Pipe --> Controller[🎮 Controller Handler]
+    Interceptor_Pre --> Pipe[🧹 ValidationPipe: DTO Validation]
+    Pipe --> Controller[🎮 Controller: Route Handling]
+    Controller --> Service[⚙️ Service: Business Logic]
+    Service --> Repo[(🗄️ Repository/DB)]
+    Repo --> Service
+    Service --> Controller
     Controller --> Interceptor_Post[⚡ Interceptor Post-logic]
-    Interceptor_Post --> Response([✅ Response Sent])
+    Interceptor_Post --> Response([✅ ApiResponse Sent])
     
     %% Error Path
-    Pipe -. Error .-> Filter[🛑 Exception Filter]
-    Controller -. Error .-> Filter
+    Pipe -. Invalid DTO .-> Filter[🛑 Exception Filter]
+    Service -. Logic Error .-> Filter
     Filter --> Response
 ```
 
-### The Execution Order:
-1.  **Middlewares**: The first line of defense. Used for logging, auth checks (like our `AuthMiddleware`), and tracking.
-2.  **Guards**: Determine if the request is authorized to proceed further.
-3.  **Interceptors (Pre-handler)**: Can bind extra logic before the method is executed.
-4.  **Pipes**: Handle data transformation and validation (our `ValidationPipe`).
-5.  **Controller (Route Handler)**: This is where your business logic finally starts!
-6.  **Interceptors (Post-handler)**: Transform the data returned by your controller.
-7.  **Exception Filters**: The fallback gate. If anything fails in the steps above, these catch the error and format the response (our `HttpExceptionFilter`).
+### The Execution Order in Our App:
+1.  **Middlewares**: Our first line of defense (Custom Loggers, API Key Auth, and Request UUID Tracking).
+2.  **Guards**: Specifically our `ThrottlerGuard` which protects us from brute-force attacks.
+3.  **Pipes (DTO Validation)**: This is where our `CreateUserDto` or `UpdateProductDto` are checked. If the data is "dirty", the request stops here.
+4.  **Controller**: The conductor. It receives the "clean" DTO and calls the appropriate Service.
+5.  **Service**: The "Brain". This is where we calculate prices, find users, and handle business rules.
+6.  **Repository (Planned)**: Where we talk to PostgreSQL.
+7.  **Exception Filters**: If a Service throws a `NotFoundException` or if a Pipe fails validation, our `HttpExceptionFilter` catches it and makes sure the error looks like a professional `ApiResponse`.
 
 ---
 
