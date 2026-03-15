@@ -228,6 +228,21 @@ export class DetailedUserDto extends IntersectionType(CreateUserDto, AdditionalI
 
 ---
 
+## 🏁 Recap & Key Takeaways
+
+Today we covered the essential tools for handling data safety and consistency in NestJS:
+
+1.  **DTOs (Data Transfer Objects)**: We learned how to define strict data contracts using classes.
+2.  **Validation**: By using `class-validator` and `ValidationPipe`, we ensured only "clean" data enters our app.
+3.  **Transformation**: We automated data conversion (e.g., string to number) using built-in pipes.
+4.  **Mapped Types**: We kept our code DRY by using `PartialType`, `PickType`, `OmitType`, and `IntersectionType`.
+5.  **API Standardization**: We created a unified `ApiResponse` interface to make our outputs predictable.
+6.  **Global Error Handling**: We implemented an `ExceptionFilter` to ensure error responses match our standard JSON format.
+
+By combining these patterns, you can build NestJS applications that are secure, type-safe, and developer-friendly!
+
+---
+
 ## ✍️ Author
 **Alvian Zachry Faturrahman**
 - Web: [alvianzf.id](https://alvianzf.id)
