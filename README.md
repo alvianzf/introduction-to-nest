@@ -12,9 +12,9 @@ The following diagram shows how a request flows through our application's middle
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'edgeColor': '#ffffff', 'tertiaryColor': '#fff9c4', 'lineColor': '#ffffff'}}}%%
 graph TD
     Client[🌐 Client Request] --> Helmet[🛡️ Helmet Security]
-    Helmet --> Morgan[📊 Morgan Logger]
-    Morgan --> Compression[⚡ Gzip Compression]
-    Compression --> LoggerMW[⚙️ Custom Logger]
+    Helmet --> Compression[⚡ Gzip Compression]
+    Compression --> Morgan[📊 Morgan Logger]
+    Morgan --> LoggerMW[⚙️ Custom Logger]
     LoggerMW --> TrackingMW[🛰️ Request Tracking]
     TrackingMW --> AuthMW[🛂 Auth Middleware - Users Only]
     AuthMW --> RateLimit[⏳ Rate Limiter]

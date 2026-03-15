@@ -88,8 +88,9 @@ Understanding how a request travels through **this specific project** is key. We
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffde7', 'edgeColor': '#ffffff', 'tertiaryColor': '#e0f7fa', 'lineColor': '#ffffff'}}}%%
 graph TD
-    Request([🌐 Incoming Request]) --> Middleware[⚙️ Middleware: Logger/Auth/Tracking]
-    Middleware --> Guard[🔒 Throttler Guard]
+    Request([🌐 Incoming Request]) --> StdMW[🛡️ Standard MW: Helmet/Comp/Morgan]
+    StdMW --> CustomMW[⚙️ Custom MW: Logger/Auth/Track]
+    CustomMW --> Guard[🔒 Throttler Guard]
     Guard --> Interceptor_Pre[⚡ Interceptor Pre-logic]
     Interceptor_Pre --> Pipe[🧹 ValidationPipe: DTO Validation]
     Pipe --> Controller[🎮 Controller: Route Handling]
