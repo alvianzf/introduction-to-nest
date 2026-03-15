@@ -11,7 +11,8 @@ Welcome to Day 6! Today we focus on **Middlewares**, the first line of defense a
 │       ├── 📄 logger.middleware.ts
 │       ├── 📄 auth.middleware.ts
 │       └── 📄 request-tracking.middleware.ts
-└── 📄 main.ts                    <-- Global configurations
+└── 📄 main.ts                    <-- Global configurations & 3rd Party MW
+└── 📄 app.module.ts              <-- Custom MW Registration
 ```
 
 ---
@@ -22,21 +23,22 @@ Welcome to Day 6! Today we focus on **Middlewares**, the first line of defense a
 **What**: Functions that log request metadata (method, URL, user-agent).
 **Why**: Crucial for observability and debugging what's happening in your app.
 
-**Functional Example:**
-```typescript
-export function logger(req, res, next) {
-  console.log(`[LOG] ${req.method} ${req.url}`);
-  next();
-}
-```
-
-**Class Example (registered in `AppModule`):**
+**Implementation (`src/common/middleware/logger.middleware.ts`):**
 ```typescript
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    console.log(`[CLASS-LOG] ${req.method} ${req.originalUrl}`);
+    console.log(`[LOG] ${req.method} ${req.originalUrl}`);
     next();
+  }
+}
+```
+
+**Registration (`src/app.module.ts`):**
+```typescript
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
 ```
@@ -45,12 +47,18 @@ export class LoggerMiddleware implements NestMiddleware {
 **What**: A middleware that validates credentials before allowing access to a route.
 **Why**: To secure specific resources (like `/users`) without cluttering controllers.
 
-**Example (API Key Validation):**
+**Implementation (`src/common/middleware/auth.middleware.ts`):**
 ```typescript
 const apiKey = req.headers['x-api-key'];
 if (!apiKey || apiKey !== 'introduction-to-nestjs') {
   throw new UnauthorizedException('Invalid API Key');
 }
+```
+
+**Registration (`src/app.module.ts`):**
+```typescript
+// Apply specifically to the 'users' route
+consumer.apply(AuthMiddleware).forRoutes('users');
 ```
 
 ### 3. Industry Standard Middlewares
@@ -59,30 +67,51 @@ if (!apiKey || apiKey !== 'introduction-to-nestjs') {
 **What**: Sets security-related HTTP headers.
 **Why**: Protects against common vulnerabilities like XSS and clickjacking.
 **Install**: `pnpm add helmet`
-**Implementation**: `app.use(helmet())`
+**Registration (`src/main.ts`):**
+```typescript
+import helmet from 'helmet';
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.use(helmet()); 
+}
+```
 
 #### 📊 Morgan
 **What**: A refined HTTP request logger.
 **Why**: Provides standardized logs for traffic analysis.
 **Install**: `pnpm add morgan`
-**Implementation**: `app.use(morgan('dev'))`
+**Registration (`src/main.ts`):**
+```typescript
+import morgan from 'morgan';
+app.use(morgan('dev'));
+```
 
 #### ⚡ Compression
 **What**: Compresses response payloads (Gzip).
 **Why**: Reduces bandwidth usage and speeds up responses for users.
 **Install**: `pnpm add compression`
-**Implementation**: `app.use(compression())`
+**Registration (`src/main.ts`):**
+```typescript
+import compression from 'compression';
+app.use(compression());
+```
 
 ### 4. Advanced: Request Tracking
 **What**: Generating a unique UUID for every incoming request.
-**Why**: To trace a request's lifecycle across logs and return it in headers for client-side reporting.
+**Why**: To trace a request's lifecycle across logs and return it in headers.
 **Install**: `pnpm add uuid`
 
-**Logic:**
+**Implementation (`src/common/middleware/request-tracking.middleware.ts`):**
 ```typescript
 const requestId = uuidv4();
 req['requestId'] = requestId;
 res.setHeader('X-Request-ID', requestId);
+```
+
+**Registration (`src/app.module.ts`):**
+```typescript
+// Register alongside logger for all routes
+consumer.apply(LoggerMiddleware, RequestTrackingMiddleware).forRoutes('*');
 ```
 
 ### 5. Rate Limiting (Throttler)
@@ -90,9 +119,16 @@ res.setHeader('X-Request-ID', requestId);
 **Why**: Prevents brute-force attacks and resource exhaustion.
 **Install**: `pnpm add @nestjs/throttler`
 
-**Implementation (`AppModule`):**
+**Registration (`src/app.module.ts`):**
 ```typescript
-ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }])
+@Module({
+  imports: [
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
+})
 ```
 
 ---
