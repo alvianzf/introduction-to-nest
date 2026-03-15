@@ -26,10 +26,23 @@ graph TD
 
 Before we dive into the code, let's talk about the *why*. A **Middleware** is essentially a function that sits between the client's request and your final route handler. In NestJS, they have full access to the `Request` and `Response` objects, and a special `next()` function that passes control to the next part of the system.
 
-Think of it like an airport security check:
-1. **Request**: You arrive at the airport (the server).
-2. **Middleware**: You go through security (authentication), check your bags (logging), and get your ticket scanned (tracking).
-3. **Route Handler**: You finally get on the plane (the controller logic).
+### Where does it sit?
+Middleware is the **very first thing** that runs after a request hits your server. It sits before any Guards, Interceptors, or Pipes.
+
+```mermaid
+sequenceDiagram
+    participant Client as 🌐 Client
+    participant MW as ⚙️ Middleware
+    participant GIP as 🔒 Guards/Interceptors/Pipes
+    participant CH as 🎮 Controller Handler
+    
+    Client->>MW: 1. Incoming Request
+    Note over MW: Logging, Auth, Tracking
+    MW-->>MW: next()
+    MW->>GIP: 2. Proceed to NestJS Lifecycle
+    GIP->>CH: 3. Final Controller Logic
+    CH-->>Client: 4. Response Sent
+```
 
 ### The Three Levels of Scope
 Not every middleware needs to watch every request. In NestJS, we can control the "zoom level" or **Scope**:
