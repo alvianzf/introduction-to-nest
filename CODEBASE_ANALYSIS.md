@@ -8,6 +8,7 @@ Welcome to the team! This document breaks down the advanced patterns used in thi
 We don't put all our code in one place. Each feature (Books, Products, Users) has its own **Module**.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e8f5e9', 'edgeColor': '#1b5e20', 'tertiaryColor': '#fff3e0'}}}%%
 graph LR
     AppModule["📦 AppModule"] --> BooksModule["📚 BooksModule"]
     AppModule --> ProductsModule["🛒 ProductsModule"]
@@ -25,6 +26,7 @@ graph LR
 Every request, whether successful or an error, returns the same JSON structure.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fff3e0', 'edgeColor': '#e65100', 'tertiaryColor': '#e0f2f1'}}}%%
 mindmap
     root((ApiResponse))
         Status(HTTP Status Code)
@@ -40,6 +42,7 @@ mindmap
 We never trust the client. Incoming data goes through a rigid validation pipeline:
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f3e5f5', 'edgeColor': '#4a148c', 'tertiaryColor': '#e8f5e9'}}}%%
 flowchart LR
     Client[🌐 Client Data] --> DTO[🧱 DTO Validation]
     DTO --> Filter[🧹 ValidationPipe]
@@ -60,6 +63,7 @@ flowchart LR
 We use a chain of decorators and middlewares to keep our controllers clean. In NestJS, middlewares run **before** your route handlers, allowing you to intercept requests and response objects.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'edgeColor': '#01579b', 'tertiaryColor': '#fff9c4'}}}%%
 sequenceDiagram
     participant C as Client
     participant M as Middleware Layer
@@ -78,6 +82,7 @@ sequenceDiagram
 Understanding how a request travels through **this specific project** is key. We use a combination of standard NestJS gates and our own custom logic.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fffde7', 'edgeColor': '#fbc02d', 'tertiaryColor': '#e0f7fa'}}}%%
 graph TD
     Request([🌐 Incoming Request]) --> Middleware[⚙️ Middleware: Logger/Auth/Tracking]
     Middleware --> Guard[🔒 Throttler Guard]

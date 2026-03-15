@@ -13,6 +13,7 @@ Our application needs to store book inventory and handle transactions when books
 We will use **PostgreSQL** as our primary relational database. We will also use **TypeORM** or **Prisma** to interact with the database from our NestJS code.
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f1f8e9', 'edgeColor': '#33691e', 'tertiaryColor': '#e1f5fe'}}}%%
 graph LR
     App[🚀 NestJS App] --> ORM[🛠️ Prisma/TypeORM]
     ORM --> DB[(🐘 PostgreSQL)]
