@@ -51,6 +51,24 @@ flowchart LR
 
 [... to be continued ...]
 
+### 2. Custom Authentication Middleware
+We created a custom middleware that checks for a specific API Key in the headers. This is applied specifically to the `Users` resource.
+
+**Code Example:**
+```typescript
+const apiKey = req.headers['x-api-key'];
+if (!apiKey || apiKey !== 'introduction-to-nestjs') {
+  throw new UnauthorizedException();
+}
+```
+
+**Registration in `AppModule`:**
+```typescript
+consumer.apply(AuthMiddleware).forRoutes('users');
+```
+
+---
+
 ---
 
 ## ✍️ Author

@@ -1,7 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+  ApiOperation,
+  ApiResponse as SwaggerResponse,
+  ApiTags,
+  ApiSecurity,
+} from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
@@ -26,6 +33,7 @@ async function bootstrap() {
     .addTag('books')
     .addTag('products')
     .addTag('users')
+    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'x-api-key')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -10,11 +10,12 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags, ApiSecurity } from '@nestjs/swagger';
 import type { ApiResponse } from '../types/api-response.interface';
 import { SafeUserDto } from './dto/create-user.dto';
 
 @ApiTags('users')
+@ApiSecurity('x-api-key')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
