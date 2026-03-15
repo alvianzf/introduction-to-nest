@@ -177,4 +177,9 @@ graph TD
 
 ---
 
-_Happy Engineering!_
+## ✍️ Author
+
+**Alvian Zachry Faturrahman**
+
+- Web: [alvianzf.id](https://alvianzf.id)
+- LinkedIn: [alvianzf](https://linkedin.com/in/alvianzf)
