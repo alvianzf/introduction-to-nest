@@ -1,245 +1,55 @@
-# Module 6, Second Week Day 1: Understanding DTO & Pipes in NestJS
+# Module 6, Second Week Day 2: Middlewares in NestJS
 
-Welcome to Day 5 of the NestJS Introduction! Today we focus on how to handle incoming data safely and efficiently using Data Transfer Objects (DTOs), Pipes, and Mapped Types.
+Welcome to Day 6! Today we dive into **Middlewares**, a powerful way to intercept and process requests before they reach your route handlers. We'll cover everything from custom implementations to industry-standard security and performance middleware.
 
 ## 📌 Topics covered in this module
-- Understanding Data Transfer Objects (DTOs) in NestJS
-- Validating request data with `class-validator`
-- Enforcing validation using `ValidationPipe`
-- Transforming incoming data with built-in pipes
-- DTO vs Entity: separating API contracts from database models
-- Reusing DTOs with mapped types (`PartialType`, `PickType`, `IntersectionType`)
-- Best practices for building scalable DTO structures
-- [Additional Lesson: Security Best Practices](./SECURITY_BEST_PRACTICES.md)
-- [Additional Lesson: Master Global Error Handling](./EXCEPTION_FILTER_GUIDE.md)
-- Recap
+- Understanding NestJS Middlewares
+- Function-based vs Class-based Middlewares
+- Global, Module, and Route-level Scopes
+- Custom Authentication Middleware
+- Security with Helmet & Rate Limiting
+- Performance with Compression
+- Request Tracking with Unique IDs
 
-## 🏗 Project Structure
+## 🏗 Project Structure (Updated)
 
 ```text
 📁 src
-├── 📄 main.ts                <-- Global pipe configuration
-├── 📁 data                   <-- Centralized mock data
-├── 📁 products               <-- Product Resource
-│   ├── 📁 dto                <-- Encapsulated Product DTOs
-│   │   ├── 📄 create-product.dto.ts
-│   │   └── 📄 update-product.dto.ts
-│   ├── 📄 products.controller.ts
-│   ├── 📄 products.service.ts
-│   └── 📄 products.repository.ts
-├── 📁 users                  <-- User Resource
-│   ├── 📁 dto                <-- Encapsulated User DTOs
-│   │   ├── 📄 create-user.dto.ts
-│   │   └── 📄 update-user.dto.ts
-│   └── ...
-└── 📁 types                  <-- Shared TypeScript Interfaces
+├── 📁 common
+│   ├── 📁 filters
+│   │   └── 📄 http-exception.filter.ts
+│   └── 📁 middleware             <-- New: Centralized Middlewares
+│       ├── 📄 logger.middleware.ts
+│       ├── 📄 auth.middleware.ts
+│       └── 📄 request-tracking.middleware.ts
+└── 📄 main.ts                    <-- Global Middleware registration
 ```
 
 ## 🚀 Learning Goals
-- Learn how to define clear and secure data contracts using DTOs.
-- Master request validation using `class-validator` and `ValidationPipe`.
-- Automatically filter and transform data with **ValidationPipe**.
-- Simplify code using **Mapped Types**.
-- Standardize all API outputs with a modular **Response Interface**.
-- Centralize error logic using a **Global Exception Filter**.
-- Handle errors gracefully using **Built-in NestJS Exceptions**.
+- Understand the Middleware lifecycle in the NestJS pipeline.
+- Implement both functional and class-based middlewares.
+- Secure specific module routes with custom authentication logic.
+- Integrate production-grade middleware (Morgan, Helmet, Compression).
+- Master advanced request tracking and rate limiting.
 
 ---
 
-## 📜 Tutorial: Understanding DTO & Pipes
+## 📜 Tutorial: Mastering Middlewares
 
-### 1. Understanding Data Transfer Objects (DTOs)
-A **DTO** is an object that defines how data will be sent over the network. It serves as a strict contract between the client and the server.
+### 1. What are Middlewares?
+Middleware is a function which is called **before** the route handler. Middleware functions have access to the `request` and `response` objects, and the `next()` middleware function in the application’s request-response cycle.
 
 ```mermaid
-graph LR
-    Client["📱 Client (JSON)"]
-    DTO["📄 DTO (Class)"]
+flowchart LR
+    Client["🌐 Client"]
+    MW1["⚙️ Middleware 1"]
+    MW2["⚙️ Middleware 2"]
     Controller["🎮 Controller"]
 
-    Client -- "POST /products" --> DTO
-    DTO --> Controller
+    Client --> MW1 --> MW2 --> Controller
 ```
 
-### 2. Validating Request Data with class-validator
-We use decorators from the `class-validator` library to define validation rules directly on our DTO properties.
-
-```typescript
-// create-product.dto.ts
-import { IsString, IsNumber, MinLength, IsPositive, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-
-export class CreateProductDto {
-  @ApiProperty({ example: 'Modern Laptop' })
-  @IsString()
-  @MinLength(3)
-  name: string;
-
-  @ApiProperty({ example: 1200 })
-  @IsNumber()
-  @IsPositive()
-  price: number;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  description?: string;
-}
-```
-
-### 3. Enforcing Validation using ValidationPipe
-To make the decorators work, we must tell NestJS to use the `ValidationPipe` globally in `main.ts`.
-
-```typescript
-// main.ts
-app.useGlobalPipes(
-  new ValidationPipe({
-    whitelist: true, // Strips properties not in the DTO
-    forbidNonWhitelisted: true, // Throws error if extra properties are sent
-    transform: true, // Auto-transforms payloads to DTO instances
-  }),
-);
-```
-
-### 4. Transforming Incoming Data with Built-in Pipes
-Pipes can also transform data. For example, converting a string ID from a URL parameter into a number or UUID.
-
-```typescript
-@Get(':id')
-findOne(@Param('id', ParseIntPipe) id: number) {
-  // id is automatically converted from string to number
-  return this.service.findOne(id);
-}
-```
-
-### 5. DTO vs Entity
-| Feature        | DTO (Data Transfer Object)      | Entity (Database Model)         |
-| -------------- | ------------------------------- | ------------------------------- |
-| **Purpose**    | API Input/Output Contract       | Database Schema Mapping         |
-| **Validation** | Format, Length, Presence        | Constraints, Relations, Indexes |
-| **Security**   | Hides sensitive internal fields | Contains all database columns   |
-
-### 6. Reusing DTOs with Mapped Types (Detailed Examples)
-
-NestJS provides utility types to keep your DTOs DRY:
-
-#### PartialType
-Creates a type with all properties of the base class set to optional.
-```typescript
-// update-product.dto.ts
-export class UpdateProductDto extends PartialType(CreateProductDto) {}
-```
-
-#### PickType
-Creates a type by picking a set of properties from an existing class.
-```typescript
-// Only includes the 'name' property
-export class UpdateProductNameDto extends PickType(CreateProductDto, ['name']) {}
-```
-
-#### OmitType
-Creates a type by picking all properties from an existing class and then removing a particular set of keys.
-```typescript
-// Includes everything EXCEPT 'password'
-export class SafeUserDto extends OmitType(CreateUserDto, ['password']) {}
-```
-
-##### Interface vs Type
-
-In this project, we utilize both `interface` and `type` for different purposes:
-
-- **Interface**: Used for defining the structure of objects, especially those that are intended to be extended or implemented by classes. They are excellent for defining public APIs and can be "merged" if declared multiple times.
-  - *Example*: `ApiResponse<T>`, `Book`, `User`, `Product`.
-- **Type**: Used for defining type aliases, unions, intersections, and primitive types. Types are more flexible for complex type logic but cannot be reopened to add new properties.
-  - *Example*: `SafeUserDto` (in some cases), or union types like `HttpStatus = 200 | 201 | 400 | 404`.
-
-### Standard API Response Format
-
-All API responses follow a consistent structure to ensure predictability for frontend consumers:
-
-```typescript
-{
-  "status": 200,    // HTTP Status Code
-  "message": "...", // Human-readable message
-  "data": []        // The actual payload (generic T)
-}
-```
-
-This is enforced using the `ApiResponse<T>` interface found in `src/types/api-response.interface.ts`.
-
-### 7. Global Exception Filter
-To ensure errors also follow the standard format, we use an **Exception Filter**. This catches any `HttpException` (like 404, 400, 500) and transforms it into our standard response.
-
-```typescript
-// main.ts
-app.useGlobalFilters(new HttpExceptionFilter());
-```
-
-Example error response:
-```json
-{
-  "status": 404,
-  "message": "Book with ID 999 not found",
-  "data": null
-}
-```
-#### IntersectionType
-Combines two types into one.
-```typescript
-// Combines basic info with additional metadata
-export class DetailedUserDto extends IntersectionType(CreateUserDto, AdditionalInfoDTO) {}
-```
-
----
-
-## 🛠 Syntax & Function Reference
-
-### Validation Decorators (`class-validator`)
-| Syntax | What is it? | Function |
-| :--- | :--- | :--- |
-| **`@IsString()`** | Decorator | Ensures the value is a valid string. |
-| **`@IsNumber()`** | Decorator | Ensures the value is a number (integer or float). |
-| **`@MinLength(n)`** | Decorator | Ensures string length is at least **n** characters. |
-| **`@IsPositive()`** | Decorator | Ensures the number is greater than zero. |
-| **`@IsOptional()`** | Decorator | Skips validation if the property is missing or null. |
-| **`@IsEmail()`** | Decorator | Ensures the string is a valid email format. |
-
-### Global Configuration (`main.ts`)
-| Syntax | What is it? | Function |
-| :--- | :--- | :--- |
-| **`whitelist: true`** | Pipe Option | Automatically removes any property NOT defined in the DTO class. |
-| **`forbidNonWhitelisted`** | Pipe Option | Throws an error (400 Bad Request) if unknown properties are detected. |
-| **`transform: true`** | Pipe Option | Converts the plain JavaScript object into an instance of the DTO class. |
-
-### NestJS Mapped Types
-| Syntax | What is it? | Function |
-| :--- | :--- | :--- |
-| **`PartialType(T)`** | Utility Class | Returns a class with all properties from **T** marked as optional. |
-| **`PickType(T, [K])`** | Utility Class | Returns a class with only the specified keys **K** from **T**. |
-| **`OmitType(T, [K])`** | Utility Class | Returns a class with all properties from **T** except the keys **K**. |
-| **`IntersectionType(A, B)`**| Utility Class | Returns a class that merges all properties from both **A** and **B**. |
-
-### Built-in Pipes
-| Syntax | What is it? | Function |
-| :--- | :--- | :--- |
-| **`ParseIntPipe`** | Pipe class | Converts a string parameter into an integer; throws error if not a number. |
-| **`ValidationPipe`** | Global Pipe | Orchestrates the validation process using `class-validator` on incoming DTOs. |
-| **`HttpExceptionFilter`** | Global Filter | Catches all exceptions and formats them into a unified `ApiResponse` JSON. |
-
----
-
-## 🏁 Recap & Key Takeaways
-
-Today we covered the essential tools for handling data safety and consistency in NestJS:
-
-1.  **DTOs (Data Transfer Objects)**: We learned how to define strict data contracts using classes.
-2.  **Validation**: By using `class-validator` and `ValidationPipe`, we ensured only "clean" data enters our app.
-3.  **Transformation**: We automated data conversion (e.g., string to number) using built-in pipes.
-4.  **Mapped Types**: We kept our code DRY by using `PartialType`, `PickType`, `OmitType`, and `IntersectionType`.
-5.  **API Standardization**: We created a unified `ApiResponse` interface to make our outputs predictable.
-6.  **Global Error Handling**: We implemented an `ExceptionFilter` to ensure error responses match our standard JSON format.
-
-By combining these patterns, you can build NestJS applications that are secure, type-safe, and developer-friendly!
+[... to be continued ...]
 
 ---
 
