@@ -1,92 +1,104 @@
 # Module 6, Second Week Day 2: Middlewares in NestJS
 
-Welcome to Day 6! Today we dive into **Middlewares**, a powerful way to intercept and process requests before they reach your route handlers. We'll cover everything from custom implementations to industry-standard security and performance middleware.
+Welcome to Day 6! Today we focus on **Middlewares**, the first line of defense and processing in the NestJS request-response pipeline.
 
-## 📌 Topics covered in this module
-- Understanding NestJS Middlewares
-- Function-based vs Class-based Middlewares
-- Global, Module, and Route-level Scopes
-- Custom Authentication Middleware
-- Security with Helmet & Rate Limiting
-- Performance with Compression
-- Request Tracking with Unique IDs
-
-## 🏗 Project Structure (Updated)
+## 🏗 Project Structure
 
 ```text
 📁 src
 ├── 📁 common
-│   ├── 📁 filters
-│   │   └── 📄 http-exception.filter.ts
-│   └── 📁 middleware             <-- New: Centralized Middlewares
+│   └── 📁 middleware             <-- Centralized Middlewares
 │       ├── 📄 logger.middleware.ts
 │       ├── 📄 auth.middleware.ts
 │       └── 📄 request-tracking.middleware.ts
-└── 📄 main.ts                    <-- Global Middleware registration
+└── 📄 main.ts                    <-- Global configurations
 ```
-
-## 🚀 Learning Goals
-- Understand the Middleware lifecycle in the NestJS pipeline.
-- Implement both functional and class-based middlewares.
-- Secure specific module routes with custom authentication logic.
-- Integrate production-grade middleware (Morgan, Helmet, Compression).
-- Master advanced request tracking and rate limiting.
 
 ---
 
 ## 📜 Tutorial: Mastering Middlewares
 
-### 1. What are Middlewares?
-Middleware is a function which is called **before** the route handler. Middleware functions have access to the `request` and `response` objects, and the `next()` middleware function in the application’s request-response cycle.
+### 1. Custom Logger Middlewares
+**What**: Functions that log request metadata (method, URL, user-agent).
+**Why**: Crucial for observability and debugging what's happening in your app.
 
-```mermaid
-flowchart LR
-    Client["🌐 Client"]
-    MW1["⚙️ Middleware 1"]
-    MW2["⚙️ Middleware 2"]
-    Controller["🎮 Controller"]
-
-    Client --> MW1 --> MW2 --> Controller
-```
-
-[... to be continued ...]
-
-### 2. Custom Authentication Middleware
-We created a custom middleware that checks for a specific API Key in the headers. This is applied specifically to the `Users` resource.
-
-**Code Example:**
+**Functional Example:**
 ```typescript
-const apiKey = req.headers['x-api-key'];
-if (!apiKey || apiKey !== 'introduction-to-nestjs') {
-  throw new UnauthorizedException();
+export function logger(req, res, next) {
+  console.log(`[LOG] ${req.method} ${req.url}`);
+  next();
 }
 ```
 
-**Registration in `AppModule`:**
+**Class Example (registered in `AppModule`):**
 ```typescript
-consumer.apply(AuthMiddleware).forRoutes('users');
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: NextFunction) {
+    console.log(`[CLASS-LOG] ${req.method} ${req.originalUrl}`);
+    next();
+  }
+}
 ```
 
-### 3. Production-Ready Middleware
-We've integrated industry-standard tools to make our app secure and performant.
+### 2. Custom Authentication Middleware
+**What**: A middleware that validates credentials before allowing access to a route.
+**Why**: To secure specific resources (like `/users`) without cluttering controllers.
 
-| Library | Purpose | How to test locally |
-| :--- | :--- | :--- |
-| **Helmet** | Sets security headers. | Use `curl -I http://localhost:3000/api` and look for `X-Content-Type-Options`. |
-| **Compression** | Gzip compression for responses. | Use `curl -H "Accept-Encoding: gzip" -I http://localhost:3000/api` and look for `Content-Encoding: gzip`. |
-| **Morgan** | HTTP request logging. | Check your terminal/console for logs like `GET /api 200 ...`. |
+**Example (API Key Validation):**
+```typescript
+const apiKey = req.headers['x-api-key'];
+if (!apiKey || apiKey !== 'introduction-to-nestjs') {
+  throw new UnauthorizedException('Invalid API Key');
+}
+```
+
+### 3. Industry Standard Middlewares
+
+#### 🛡️ Helmet
+**What**: Sets security-related HTTP headers.
+**Why**: Protects against common vulnerabilities like XSS and clickjacking.
+**Install**: `pnpm add helmet`
+**Implementation**: `app.use(helmet())`
+
+#### 📊 Morgan
+**What**: A refined HTTP request logger.
+**Why**: Provides standardized logs for traffic analysis.
+**Install**: `pnpm add morgan`
+**Implementation**: `app.use(morgan('dev'))`
+
+#### ⚡ Compression
+**What**: Compresses response payloads (Gzip).
+**Why**: Reduces bandwidth usage and speeds up responses for users.
+**Install**: `pnpm add compression`
+**Implementation**: `app.use(compression())`
 
 ### 4. Advanced: Request Tracking
-We implemented a custom middleware to trace requests throughout the system. It generates a unique UUID for every request and attaches it to the `X-Request-ID` response header.
+**What**: Generating a unique UUID for every incoming request.
+**Why**: To trace a request's lifecycle across logs and return it in headers for client-side reporting.
+**Install**: `pnpm add uuid`
+
+**Logic:**
+```typescript
+const requestId = uuidv4();
+req['requestId'] = requestId;
+res.setHeader('X-Request-ID', requestId);
+```
 
 ### 5. Rate Limiting (Throttler)
-To prevent brute-force attacks and abuse, we integrated `@nestjs/throttler`.
-- **Limit**: 10 requests / 1 minute (per IP).
+**What**: Restricting the number of requests a client can make in a timeframe.
+**Why**: Prevents brute-force attacks and resource exhaustion.
+**Install**: `pnpm add @nestjs/throttler`
+
+**Implementation (`AppModule`):**
+```typescript
+ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }])
+```
 
 ---
 
 ## 💡 Key Takeaways & Extra Lessons
-- [Junior Engineer Guide: Codebase Analysis](./JUNIOR_ENGINEER_GUIDE.md)
+- [Codebase Analysis & Best Practices](./CODEBASE_ANALYSIS.md)
 
 ---
 
