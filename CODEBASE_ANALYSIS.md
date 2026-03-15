@@ -110,8 +110,26 @@ sequenceDiagram
 At first glance, it might seem like more work, but the benefits are huge:
 
 - **Decoupling**: Our Business Logic (Service) doesn't know—and doesn't care—if our data is in a JSON file, a PostgreSQL database, or an external API. It just knows it can call `repo.findAll()`.
-- **Swapability**: Want to move from our current "Mock Data" files to a real database? You *only* have to change the code inside the Repository. Your Services and Controllers won't even notice the difference!
+- **Swapability (The Game Changer)**: 
+    Imagine the company grows and needs more flexibility. If we need to move from **PostgreSQL to MongoDB**, or change our ORM from **Prisma to TypeORM**, we *only* have to change the code inside the Repository. Our Services and Controllers won't even notice the difference!
 - **Cleanliness**: Repositories are "logic-free zones." They only handle CRUD (Create, Read, Update, Delete) operations, keeping your Services focused on the actual "Brain" work.
+
+### Real-World Case Study: Changing the Engine
+
+What happens when the business decides to switch technologies? Without a Repository, you'd have to rewrite logic in every single Service. With a Repository, you just replace the "engine" under the hood:
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#efebe9', 'edgeColor': '#ffffff', 'tertiaryColor': '#f3e5f5', 'lineColor': '#ffffff'}}}%%
+graph TD
+    Service["⚙️ Service (Business Logic)"] -- Fixed Contract --> Repo["🗄️ Repository Interface"]
+    
+    Repo -. "Option A (Initial)" .-> PG["🐘 PostgreSQL / Prisma"]
+    Repo -. "Option B (Future)" .-> Mongo["🍃 MongoDB / TypeORM"]
+    
+    style PG fill:#e3f2fd,stroke:#2196f3
+    style Mongo fill:#e8f5e9,stroke:#4caf50
+    style Service fill:#fff3e0,stroke:#ff9800
+```
 
 ### Seeing it in Code:
 
