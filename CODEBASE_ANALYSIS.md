@@ -14,15 +14,23 @@ graph LR
     AppModule["📦 AppModule"] --> BooksModule["📚 BooksModule"]
     AppModule --> ProductsModule["🛒 ProductsModule"]
     AppModule --> UsersModule["👤 UsersModule"]
-    
+
     BooksModule --> BooksController["🎮 BooksController"]
-    BooksController --> BooksService["⚙️ BooksService"]
-    BooksService --> BooksRepository["🗄️ BooksRepository"]
+    BooksModule --> BooksService["⚙️ BooksService"]
+    BooksModule --> BooksRepository["🗄️ BooksRepository"]
+
+    UsersModule --> UsersController["🎮 UsersController"]
+    UsersModule --> UsersService["⚙️ UsersService"]
+    UsersModule --> UsersRepository["🗄️ UsersRepository"]
+
+    ProductsModule --> ProductsController["🎮 ProductsController"]
+    ProductsModule --> ProductsService["⚙️ ProductsService"]
+    ProductsModule --> ProductsRepository["🗄️ ProductsRepository"]
 
     linkStyle default stroke:#ffffff,stroke-width:2px
 ```
 
-By encapsulating everything this way, we get **Encapsulation** for free. If the logic in the `Books` module needs a massive overhaul, you can work on it without ever worrying about accidentally breaking the `Users` system. It’s also incredibly portable—if you need this `Users` logic in another project, you can practically lift the whole folder and go. 
+By encapsulating everything this way, we get **Encapsulation** for free. If the logic in the `Books` module needs a massive overhaul, you can work on it without ever worrying about accidentally breaking the `Users` system. It’s also incredibly portable—if you need this `Users` logic in another project, you can practically lift the whole folder and go.
 
 **Observation Tip**: Peek into `src/users/users.module.ts`. You’ll see how we bundle our controllers, services, and repositories into one neat package using the `@Module` decorator.
 
@@ -98,7 +106,7 @@ graph TD
     Service --> Controller
     Controller --> Interceptor_Post[⚡ Interceptor Post-logic]
     Interceptor_Post --> Response([✅ ApiResponse Sent])
-    
+
     %% Error Path
     Pipe -. Invalid DTO .-> Filter[🛑 Exception Filter]
     Service -. Logic Error .-> Filter
@@ -112,6 +120,7 @@ Notice how we’ve strategically placed our **Middlewares** right at the front. 
 ---
 
 ## 🚀 Pro-Tips for Success
+
 - **Stay Typed**: Avoid `any` like the plague. It defeats the purpose of TypeScript and hides bugs.
 - **Keep it DRY**: Use **Mapped Types** (like `PartialType`) to reuse your DTO definitions.
 - **Observe**: Keep your terminal open. Our custom loggers and Morgan are there to tell you exactly how your code is performing in real-time.
