@@ -34,9 +34,7 @@ import { APP_GUARD } from '@nestjs/core';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Global Logging & Tracking
-    consumer
-      .apply(LoggerMiddleware, RequestTrackingMiddleware)
-      .forRoutes('*');
+    consumer.apply(LoggerMiddleware, RequestTrackingMiddleware).forRoutes('*');
 
     // Authentication for Users only
     consumer.apply(AuthMiddleware).forRoutes('users');
