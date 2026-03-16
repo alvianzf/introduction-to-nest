@@ -10,7 +10,11 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse as SwaggerResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { ApiResponse } from '../types/api-response.interface';
 import type { Product } from '../types/product.type';
 

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 /**
  * Functional Middleware
- * Simple, lightweight, and suitable for logic that doesn't 
+ * Simple, lightweight, and suitable for logic that doesn't
  * require dependency injection.
  */
 export function logger(req: Request, res: Response, next: NextFunction) {
@@ -13,7 +13,7 @@ export function logger(req: Request, res: Response, next: NextFunction) {
 
 /**
  * Class-based Middleware
- * Powerful, supports Dependency Injection, and can be used 
+ * Powerful, supports Dependency Injection, and can be used
  * with the standard Injectable pattern.
  */
 @Injectable()
@@ -22,9 +22,7 @@ export class LoggerMiddleware implements NestMiddleware {
     const { method, originalUrl } = req;
     const userAgent = req.get('user-agent') || '';
 
-    console.log(
-      `[Class Logger] ${method} ${originalUrl} - ${userAgent}`
-    );
+    console.log(`[Class Logger] ${method} ${originalUrl} - ${userAgent}`);
 
     next();
   }

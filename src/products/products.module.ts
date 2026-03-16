@@ -8,4 +8,3 @@ import { ProductRepository } from './products.repository';
   providers: [ProductsService, ProductRepository],
 })
 export class ProductsModule {}
-

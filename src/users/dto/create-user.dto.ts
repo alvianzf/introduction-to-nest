@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class CreateUserDto {
@@ -28,4 +28,3 @@ export class CreateUserDto {
 export class SafeUserDto extends OmitType(CreateUserDto, [
   'password',
 ] as const) {}
-

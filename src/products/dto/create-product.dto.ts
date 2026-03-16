@@ -23,4 +23,3 @@ export class CreateProductDto {
   @IsString()
   description?: string;
 }
-

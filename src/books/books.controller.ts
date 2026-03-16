@@ -9,7 +9,12 @@ import {
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBooksDto } from './dto/create-book.dto';
-import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags, ApiParam } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse as SwaggerResponse,
+  ApiTags,
+  ApiParam,
+} from '@nestjs/swagger';
 import type { ApiResponse } from '../types/api-response.interface';
 import { Book } from '../types/book.type';
 
@@ -21,7 +26,8 @@ export class BooksController {
   @Get()
   @ApiOperation({ summary: 'Get all books' }) // Updated summary
   @SwaggerResponse({ status: 200, description: 'Return all books.' }) // Updated decorator and description
-  findAll(): ApiResponse<Book[]> { // Updated return type
+  findAll(): ApiResponse<Book[]> {
+    // Updated return type
     return this.booksService.findAll();
   }
 
@@ -34,7 +40,8 @@ export class BooksController {
   })
   @SwaggerResponse({ status: 200, description: 'Return single book.' }) // Updated decorator and description
   @SwaggerResponse({ status: 404, description: 'Book not found.' }) // Updated decorator
-  findOne(@Param('id') id: string): ApiResponse<Book> { // Updated return type
+  findOne(@Param('id') id: string): ApiResponse<Book> {
+    // Updated return type
     return this.booksService.findOne(id);
   }
 
@@ -44,7 +51,8 @@ export class BooksController {
     status: 201,
     description: 'Book created.', // Updated description
   })
-  create(@Body() createBooksDto: CreateBooksDto): ApiResponse<Book> { // Updated return type
+  create(@Body() createBooksDto: CreateBooksDto): ApiResponse<Book> {
+    // Updated return type
     return this.booksService.create(createBooksDto);
   }
 

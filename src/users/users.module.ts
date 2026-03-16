@@ -8,4 +8,3 @@ import { UserRepository } from './users.repository';
   providers: [UsersService, UserRepository],
 })
 export class UsersModule {}
-
