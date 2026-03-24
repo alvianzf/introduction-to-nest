@@ -1,4 +1,4 @@
-# Module 6: Day 7 - The Master of Injection
+# Module 6, Second Week Day 3 - The Master of Injection
 
 Welcome to Day 7! Today, we're going deep into the "magic" that makes NestJS so powerful: **Dependency Injection (DI)**. If Controllers and Services are our building blocks, DI is the advanced crane that automatically places them exactly where they need to go, without us having to lift a finger.
 
@@ -23,13 +23,14 @@ graph TD
 ```
 
 ### Why do we use DI?
-Without DI, you'd be doing `const service = new MyService(new MyRepo())` inside every controller. This is called **Hard Coupling**. If `MyRepo` changes, you'd have to update *every* controller. With DI, you only change the definition in the **Module**, and Nest handles the rest.
+
+Without DI, you'd be doing `const service = new MyService(new MyRepo())` inside every controller. This is called **Hard Coupling**. If `MyRepo` changes, you'd have to update _every_ controller. With DI, you only change the definition in the **Module**, and Nest handles the rest.
 
 ---
 
 ## 🔄 Inversion of Control (IoC): Flipping the Script
 
-In traditional programming, your code controls the flow. In **IoC**, you give that control to the framework. You don't say "I want *this specific* Repository"; you say "I want *something* that looks like a Repository."
+In traditional programming, your code controls the flow. In **IoC**, you give that control to the framework. You don't say "I want _this specific_ Repository"; you say "I want _something_ that looks like a Repository."
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fff3e0', 'edgeColor': '#ffffff', 'tertiaryColor': '#e0f2f1', 'lineColor': '#ffffff'}}}%%
@@ -55,6 +56,7 @@ This makes your code incredibly **Testable**. You can swap a real database for a
 Sometimes, a simple class isn't enough. Nest gives us specialized tools for complex situations:
 
 ### 1. The Constant: `useValue`
+
 Used when you have a fixed object (like a configuration) that you want to share across the app. We used this for our `APP_CONFIG` in `src/common/config/app-config.provider.ts`.
 
 ```typescript
@@ -65,7 +67,8 @@ Used when you have a fixed object (like a configuration) that you want to share 
 ```
 
 ### 2. The Smart Builder: `useFactory`
-This is the "Genius" provider. It’s a function that can run logic to decide *how* to create your dependency. We used this in `ProductsModule` to instantiate our repository:
+
+This is the "Genius" provider. It’s a function that can run logic to decide _how_ to create your dependency. We used this in `ProductsModule` to instantiate our repository:
 
 ```typescript
 {
@@ -78,31 +81,35 @@ This is the "Genius" provider. It’s a function that can run logic to decide *h
 ```
 
 ### 3. The Proxy: `useClass`
+
 Used to tell Nest: "Whenever someone asks for `ServiceA`, give them an instance of `ServiceB` instead." Great for refactoring legacy code!
 
 ---
 
 ## 📖 Glossary & Syntax Guide (Day 7 Update)
 
-| Term / Syntax | Function | What is it? |
-| :--- | :--- | :--- |
-| **DI Container** | **The Warehouse** | The internal system that manages and instantiates all your providers. |
-| **IoC** | **Design Pattern** | "Don't call us, we'll call you." Giving control of object creation to the framework. |
-| **Provider** | **The Product** | Any object/class that can be injected into another component. |
-| **Injection Token**| **The Catalog ID** | A unique key (string or symbol) used to look up a provider (like `APP_CONFIG`). |
-| **`@Inject()`** | **Manual Request** | Used to inject providers that aren't classes (like strings or custom tokens). |
-| **`useValue`** | **Static Data** | A provider type for objects, strings, or numbers. |
-| **`useFactory`** | **Dynamic Logic** | A provider type that uses a function to create the dependency. |
-| **`useClass`** | **Alias/Swap** | A provider type that swaps one class for another. |
+| Term / Syntax       | Function           | What is it?                                                                          |
+| :------------------ | :----------------- | :----------------------------------------------------------------------------------- |
+| **DI Container**    | **The Warehouse**  | The internal system that manages and instantiates all your providers.                |
+| **IoC**             | **Design Pattern** | "Don't call us, we'll call you." Giving control of object creation to the framework. |
+| **Provider**        | **The Product**    | Any object/class that can be injected into another component.                        |
+| **Injection Token** | **The Catalog ID** | A unique key (string or symbol) used to look up a provider (like `APP_CONFIG`).      |
+| **`@Inject()`**     | **Manual Request** | Used to inject providers that aren't classes (like strings or custom tokens).        |
+| **`useValue`**      | **Static Data**    | A provider type for objects, strings, or numbers.                                    |
+| **`useFactory`**    | **Dynamic Logic**  | A provider type that uses a function to create the dependency.                       |
+| **`useClass`**      | **Alias/Swap**     | A provider type that swaps one class for another.                                    |
 
 ---
 
 ## 💡 Key Takeaways
-Today, we’ve moved from "just writing code" to "architecting systems." By mastering Dependency Injection and IoC, you’ve made your NestJS application infinitely more flexible, testable, and maintainable. 
+
+Today, we’ve moved from "just writing code" to "architecting systems." By mastering Dependency Injection and IoC, you’ve made your NestJS application infinitely more flexible, testable, and maintainable.
 
 ---
 
 ## ✍️ Author
+
 **Alvian Zachry Faturrahman**
+
 - Web: [alvianzf.id](https://alvianzf.id)
 - LinkedIn: [alvianzf](https://linkedin.com/in/alvianzf)
