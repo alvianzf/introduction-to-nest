@@ -218,6 +218,22 @@ graph TD
 
 ---
 
+## 📚 7. Full-Stack Glossary
+
+| Term | Domain | Definition |
+| :--- | :--- | :--- |
+| **DI Container** | Backend | The internal system (NestJS) that creates, stores, and delivers class instances automatically. |
+| **IoC** | General | "Inversion of Control" — Giving the framework the power to manage the lifecycle of your classes. |
+| **Singleton** | General | A design pattern ensuring only one instance of a class exists (e.g., a Service or a Redux Store). |
+| **Prop Drilling** | Frontend | The anti-pattern of passing data through multiple layers of components that don't need it. |
+| **Injection Token**| Backend | A unique ID (string or symbol) used to identify a non-class dependency in the DI container. |
+| **State Store** | Frontend | A centralized Singleton (Redux) that holds the "Truth" for your entire UI state. |
+| **Side Effect** | General | An action that changes state or interacts with the outside world (API calls, DB writes). |
+| **Decoupling** | General | The process of making components independent so changing one doesn't break others. |
+| **Strategy** | Frontend | In React, Custom Hooks are strategies that we "plug" into components to add logic. |
+
+---
+
 ## ✍️ Author
 
 **Alvian Zachry Faturrahman**
