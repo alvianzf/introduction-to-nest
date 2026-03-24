@@ -5,6 +5,16 @@ import { ProductRepository } from './products.repository';
 
 @Module({
   controllers: [ProductsController],
-  providers: [ProductsService, ProductRepository],
+  providers: [
+    ProductsService,
+    {
+      provide: ProductRepository,
+      useFactory: () => {
+        // Factory logic: here we could decide which implementation to return
+        // (e.g., based on env vars or other providers).
+        return new ProductRepository();
+      },
+    },
+  ],
 })
 export class ProductsModule {}
