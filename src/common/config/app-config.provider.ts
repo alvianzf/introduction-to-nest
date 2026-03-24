@@ -1,6 +1,15 @@
 export const APP_CONFIG = 'APP_CONFIG';
 
-export const AppConfig = {
+export interface AppConfig {
+  name: string;
+  version: string;
+  environment: string;
+  features: {
+    useAdvancedDI: boolean;
+  };
+}
+
+export const AppConfigData: AppConfig = {
   name: 'Introduction to NestJS',
   version: '1.2 (Day 7)',
   environment: 'development',
@@ -11,5 +20,5 @@ export const AppConfig = {
 
 export const AppConfigProvider = {
   provide: APP_CONFIG,
-  useValue: AppConfig,
+  useValue: AppConfigData,
 };

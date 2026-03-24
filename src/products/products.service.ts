@@ -1,4 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { APP_CONFIG } from '../common/config/app-config.provider';
+import type { AppConfig } from '../common/config/app-config.provider';
 import { ProductRepository } from './products.repository';
 import { Product } from '../types/product.type';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -7,7 +9,10 @@ import { ApiResponse } from '../types/api-response.interface';
 
 @Injectable()
 export class ProductsService {
-  constructor(private productRepository: ProductRepository) {}
+  constructor(
+    private productRepository: ProductRepository,
+    @Inject(APP_CONFIG) private config: AppConfig,
+  ) {}
 
   create(createProductDto: CreateProductDto): ApiResponse<Product> {
     const newProduct: Product = {
@@ -23,6 +28,9 @@ export class ProductsService {
   }
 
   findAll(): ApiResponse<Product[]> {
+    console.log(
+      `[ProductsService] Fetching all products for ${this.config.name} v${this.config.version}`,
+    );
     const products = this.productRepository.findAll();
     return {
       status: 200,
