@@ -9,6 +9,7 @@ import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { RequestTrackingMiddleware } from './common/middleware/request-tracking.middleware';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { AppConfigProvider } from './common/config/app-config.provider';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { APP_GUARD } from '@nestjs/core';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    AppConfigProvider,
   ],
 })
 export class AppModule implements NestModule {
